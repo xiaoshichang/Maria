@@ -8,5 +8,10 @@ namespace Maria.Shared.Serialize
 		{
 			throw new Exception();
 		}
+
+		public object Deserialize(byte[] bytes)
+		{
+			throw new Exception();
+		}
 	}
 }
