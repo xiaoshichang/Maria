@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maria.Server", "Maria.Server\Maria.Server.csproj", "{E7187EC7-D330-42EB-83EC-24BBD7B8F5F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maria.Server.NativeInterface", "Maria.Server.NativeInterface\Maria.Server.NativeInterface.csproj", "{B74CB2E0-1563-46B5-848B-224E6DAFCC9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maria.Shared", "..\..\Shared\Maria.Shared\Maria.Shared.csproj", "{CAA12F72-FBFD-4EEE-83B5-69D83F73FD86}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E7187EC7-D330-42EB-83EC-24BBD7B8F5F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7187EC7-D330-42EB-83EC-24BBD7B8F5F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7187EC7-D330-42EB-83EC-24BBD7B8F5F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7187EC7-D330-42EB-83EC-24BBD7B8F5F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B74CB2E0-1563-46B5-848B-224E6DAFCC9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B74CB2E0-1563-46B5-848B-224E6DAFCC9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B74CB2E0-1563-46B5-848B-224E6DAFCC9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B74CB2E0-1563-46B5-848B-224E6DAFCC9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAA12F72-FBFD-4EEE-83B5-69D83F73FD86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAA12F72-FBFD-4EEE-83B5-69D83F73FD86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAA12F72-FBFD-4EEE-83B5-69D83F73FD86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAA12F72-FBFD-4EEE-83B5-69D83F73FD86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
