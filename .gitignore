@@ -28,3 +28,6 @@ UnityProject/**/*.VC.db
 **/bin/
 **/obj/
 Server/MariaServer/Debug
+Server/MariaServerNative/cmake-build-debug
+Server/MariaServerNative/cmake-build-release
+
