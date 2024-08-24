@@ -1,6 +1,21 @@
 cmake_minimum_required(VERSION 3.26)
 project(MariaServerNative)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
-add_library(MariaServerNative SHARED library.cpp)
+include(cmake/SetupBoostLibrary.cmake)
+
+add_library(MariaServerNative MODULE
+        Logger/Logger.cpp
+        Export/ExportAPIs.cpp
+)
+
+target_include_directories(MariaServerNative PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_directories(MariaServerNative PRIVATE ${Boost_LIBRARY_DIRS})
+if (WIN32)
+    target_link_libraries(MariaServerNative PRIVATE ws2_32 wsock32 ${Boost_LIBRARIES})
+else()
+    target_link_libraries(MariaServerNative PRIVATE ${Boost_LIBRARIES})
+endif()
+
+set_target_properties(MariaServerNative PROPERTIES OUTPUT_NAME "MariaServerNative")
