@@ -31,3 +31,7 @@ Server/MariaServer/Debug
 Server/MariaServerNative/cmake-build-debug
 Server/MariaServerNative/cmake-build-release
 
+# tools
+Tools/ServerOperation/Logs
+
+

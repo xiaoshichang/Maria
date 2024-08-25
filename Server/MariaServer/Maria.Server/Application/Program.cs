@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Maria.Server.Log;
 
 namespace Maria.Server.Application
@@ -6,6 +7,22 @@ namespace Maria.Server.Application
 	
 	public static class Program
 	{
+		private static void _SetNativeDllSearchPath()
+		{
+			var path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+			if (path != string.Empty)
+			{
+				path += ";";
+			}
+			var nativeDllSearchPath = Environment.GetEnvironmentVariable("NativeDllSearchPath");
+			if (string.IsNullOrEmpty(nativeDllSearchPath))
+			{
+				throw new NullReferenceException("Native dll search path was not found.");
+			}
+			path += nativeDllSearchPath;
+			Environment.SetEnvironmentVariable("PATH", path);
+		}
+		
 		private static void _LoadConfig()
 		{
 			var configPath = Environment.GetEnvironmentVariable("ConfigPath");
@@ -58,10 +75,12 @@ namespace Maria.Server.Application
 		{
 			try
 			{
+				_SetNativeDllSearchPath();
 				_LoadConfig();
 				_InitLogger();
 				_LogApplicationEnvironment();
 				Console.WriteLine("Hello, World!");
+				Thread.Sleep(Timeout.Infinite);
 			}
 			catch (Exception e)
 			{

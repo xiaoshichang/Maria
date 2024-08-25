@@ -1,0 +1,52 @@
+{
+  "Common":
+  {
+    "GameplayAssemblies": 
+    [
+    ],
+    "LogPath": "Logs",
+    "Database":
+    {
+      "Connection": "mongodb://localhost:27017",
+      "DatabaseName": "demo"
+    }
+  },
+  "GMServer": {
+    "Name": "GMServer",
+    "InnerIp": "127.0.0.1",
+    "InnerPort": 40000,
+    "TelnetPort": 40002
+  },
+  "GameServers":
+  [
+    {
+      "Name": "GameServer1",
+      "InnerIp": "127.0.0.1",
+      "InnerPort": 40100,
+      "TelnetPort": 40101
+    },
+    {
+      "Name": "GameServer2",
+      "InnerIp": "127.0.0.1",
+      "InnerPort": 40200,
+      "TelnetPort": 40201
+    }
+  ],
+  "GateServers":
+  [
+    {
+      "Name": "GateServer1",
+      "InnerIp": "127.0.0.1",
+      "InnerPort": 40300,
+      "OuterIp": "127.0.0.1",
+      "OuterPort": 40301
+    },
+    {
+      "Name": "GateServer2",
+      "InnerIp": "127.0.0.1",
+      "InnerPort": 40400,
+      "OuterIp": "127.0.0.1",
+      "OuterPort": 40401
+    }
+  ]
+}
