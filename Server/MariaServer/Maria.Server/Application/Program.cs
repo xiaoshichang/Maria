@@ -1,6 +1,10 @@
 ﻿using System;
-using System.Threading;
+using Maria.Server.Application.Server.GameServer;
+using Maria.Server.Application.Server.GateServer;
+using Maria.Server.Application.Server.GMServer;
 using Maria.Server.Log;
+
+#pragma warning disable CS8618
 
 namespace Maria.Server.Application
 {
@@ -71,6 +75,26 @@ namespace Maria.Server.Application
 			Logger.Info($"ProcessorCount: {Environment.ProcessorCount}");
 		}
 		
+		private static void _CreateServerByServerConfig()
+		{
+			if (ServerConfig is GMServerConfig)
+			{
+				Server = new GMServer();
+			}
+			else if (ServerConfig is GameServerConfig)
+			{
+				Server = new GameServer();
+			}
+			else if (ServerConfig is GateServerConfig)
+			{
+				Server = new GateServer();
+			}
+			else
+			{
+				throw new Exception("unknown server type");
+			}
+		}
+		
 		static void Main(string[] args)
 		{
 			try
@@ -79,8 +103,11 @@ namespace Maria.Server.Application
 				_LoadConfig();
 				_InitLogger();
 				_LogApplicationEnvironment();
-				Console.WriteLine("Hello, World!");
-				Thread.Sleep(Timeout.Infinite);
+				_CreateServerByServerConfig();
+				
+				Server.Init();
+				Server.Run();
+				Server.UnInit();
 			}
 			catch (Exception e)
 			{
@@ -95,8 +122,9 @@ namespace Maria.Server.Application
 		}
 		
 		
-		public static ServerGroupConfig? ServerGroupConfig;
-		public static ServerConfigBase? ServerConfig;
+		public static ServerGroupConfig ServerGroupConfig;
+		public static ServerConfigBase ServerConfig;
+		public static Server.ServerBase.ServerBase Server;
 	}
 }
 

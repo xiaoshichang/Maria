@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Application\Server\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\..\Shared\Maria.Shared\Maria.Shared.csproj" />
       <ProjectReference Include="..\Maria.Server.NativeInterface\Maria.Server.NativeInterface.csproj" />
     </ItemGroup>
