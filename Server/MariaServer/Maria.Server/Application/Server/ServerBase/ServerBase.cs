@@ -1,6 +1,7 @@
 ﻿
 using System.Threading;
 using Maria.Server.Log;
+using Maria.Server.NativeInterface;
 
 namespace Maria.Server.Application.Server.ServerBase
 {
@@ -8,22 +9,28 @@ namespace Maria.Server.Application.Server.ServerBase
 	{
 		public virtual void Init()
 		{
-			
+			NativeAPI.IOContext_Init();
+			InitTelnetNetwork();
+			InitGroupNetwork();
+
+			var tid = NativeAPI.Timer_AddTimer(10000, () =>
+			{
+				Logger.Info("timeout");
+			});
 		}
 
 		public void Run()
 		{
-			while (true)
-			{
-				Thread.Sleep(2000);
-				Logger.Info("run...");
-			}
+			NativeAPI.IOContext_Run();
 		}
 
 		public virtual void UnInit()
 		{
-			
+			UnInitGroupNetwork();
+			UnInitTelnetNetwork();
+			NativeAPI.IOContext_UnInit();
 		}
+		
 		
 	}
 }

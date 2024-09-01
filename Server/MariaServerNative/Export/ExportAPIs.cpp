@@ -1,6 +1,7 @@
 
 #include "ExportAPIs.h"
 #include "../Logger/Logger.h"
+#include "../IOContext/IOContext.h"
 
 using namespace Maria::Server::Native;
 
@@ -27,4 +28,39 @@ void Logger_Warning(const char* message)
 void Logger_Error(const char* message)
 {
     Logger::Error(message, LogTag::Managed);
+}
+
+TimerID Timer_AddTimer(unsigned int delay, TimeoutCallback callback)
+{
+    return TimerMgr::AddTimer(delay, callback);
+}
+
+TimerID Timer_AddRepeatTimer(unsigned int delay, unsigned int interval, TimeoutCallback callback)
+{
+    return TimerMgr::AddRepeatTimer(delay, interval, callback);
+}
+
+bool Timer_CancelTimer(TimerID tid)
+{
+    return TimerMgr::CancelTimer(tid);
+}
+
+unsigned int Timer_GetTimersCount()
+{
+    return TimerMgr::GetTimersCount();
+}
+
+void IOContext_Init()
+{
+    IOContext::Init();
+}
+
+void IOContext_Run()
+{
+    IOContext::Run();
+}
+
+void IOContext_UnInit()
+{
+    IOContext::UnInit();
 }

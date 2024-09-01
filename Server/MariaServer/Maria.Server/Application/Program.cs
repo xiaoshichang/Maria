@@ -106,8 +106,10 @@ namespace Maria.Server.Application
 				_CreateServerByServerConfig();
 				
 				Server.Init();
+				Logger.Info("Server Init ok...");
 				Server.Run();
 				Server.UnInit();
+				Logger.Info("Server Exit ok...");
 			}
 			catch (Exception e)
 			{

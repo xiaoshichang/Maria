@@ -8,6 +8,9 @@ include(cmake/SetupBoostLibrary.cmake)
 add_library(MariaServerNative MODULE
         Logger/Logger.cpp
         Export/ExportAPIs.cpp
+        IOContext/IOContext.cpp
+        Timer/Timer.cpp
+        Timer/TimerMgr.cpp
 )
 
 target_include_directories(MariaServerNative PRIVATE ${Boost_INCLUDE_DIRS})
