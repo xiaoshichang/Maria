@@ -1,4 +1,5 @@
-﻿using Maria.Server.NativeInterface;
+﻿using System.Diagnostics;
+using Maria.Server.NativeInterface;
 
 namespace Maria.Server.Log
 {
@@ -27,6 +28,15 @@ namespace Maria.Server.Log
 		public static void Error(string format, params object[] args)
 		{
 			NativeAPI.Logger_Error(string.Format(format, args));
+		}
+
+		[Conditional("DEBUG")]
+		public static void Assert(bool condition, string message)
+		{
+			if (!condition)
+			{
+				NativeAPI.Logger_Error(message);
+			}
 		}
 	}
 }

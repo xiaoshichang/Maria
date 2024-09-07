@@ -11,6 +11,7 @@ namespace Maria::Server::Native
         static void Run();
         static void UnInit();
         static void Stop();
+        static boost::asio::io_context* Get();
 
     private:
         static void InitTimerManager();

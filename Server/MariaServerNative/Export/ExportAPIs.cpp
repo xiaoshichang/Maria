@@ -64,3 +64,42 @@ void IOContext_UnInit()
 {
     IOContext::UnInit();
 }
+
+NetworkInstance* NetworkInstance_Init(NetworkInitInfo info,
+                                      OnSessionConnectedCallbackPtr onConnected,
+                                      OnSessionAcceptCallbackPtr onAccept)
+{
+    if (info.ConnectionType == NetworkConnectionType::Tcp)
+    {
+        return new TcpNetworkInstance(info, onConnected, onAccept);
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
+void NetworkInstance_UnInit(NetworkInstance* network)
+{
+    delete network;
+}
+
+void NetworkInstance_StartListen(NetworkInstance* network, const char* ip, int port)
+{
+    network->StartListen(ip, port);
+}
+
+void NetworkInstance_StopListen(NetworkInstance* network)
+{
+    network->StopListen();
+}
+
+void NetworkInstance_ConnectTo(NetworkInstance* network, const char* ip, int port)
+{
+    network->ConnectTo(ip, port);
+}
+
+unsigned int NetworkInstance_GetSessionCount(NetworkInstance* network)
+{
+    return network->GetSessionCount();
+}

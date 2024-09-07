@@ -38,3 +38,8 @@ void IOContext::UnInitTimerManager()
 {
     TimerMgr::UnInit();
 }
+
+boost::asio::io_context *IOContext::Get()
+{
+    return Context_;
+}

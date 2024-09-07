@@ -12,11 +12,6 @@ namespace Maria.Server.Application.Server.ServerBase
 			NativeAPI.IOContext_Init();
 			InitTelnetNetwork();
 			InitGroupNetwork();
-
-			var tid = NativeAPI.Timer_AddTimer(10000, () =>
-			{
-				Logger.Info("timeout");
-			});
 		}
 
 		public void Run()

@@ -9,6 +9,8 @@
 #endif
 
 #include "../Timer/TimerMgr.h"
+#include "../Network/Tcp/TcpNetworkInstance.h"
+#include "../Network/NetworkSession.h"
 
 using namespace Maria::Server::Native;
 
@@ -32,6 +34,14 @@ NativeAPI void IOContext_Init();
 NativeAPI void IOContext_Run();
 NativeAPI void IOContext_UnInit();
 
+NativeAPI NetworkInstance* NetworkInstance_Init(NetworkInitInfo info,
+                                                OnSessionConnectedCallbackPtr onConnected,
+                                                OnSessionAcceptCallbackPtr onAccept);
+NativeAPI void NetworkInstance_UnInit(NetworkInstance* network);
+NativeAPI void NetworkInstance_StartListen(NetworkInstance* network, const char* ip, int port);
+NativeAPI void NetworkInstance_StopListen(NetworkInstance* network);
+NativeAPI void NetworkInstance_ConnectTo(NetworkInstance* network, const char* ip, int port);
+NativeAPI unsigned int NetworkInstance_GetSessionCount(NetworkInstance* network);
 
 #ifdef __cplusplus
 }

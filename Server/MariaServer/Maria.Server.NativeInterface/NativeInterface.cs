@@ -22,6 +22,31 @@ namespace Maria.Server.NativeInterface
 		#region Delegate
 
 		public delegate void TimerCallback();
+		public delegate void OnSessionAcceptHandler(IntPtr session);
+		public delegate void OnSessionConnectedHandler(IntPtr session, int ec);
+
+		#endregion
+
+		#region Struct
+		
+		public enum NetworkConnectionType : int
+		{
+			Tcp = 1,
+			Kcp
+		}
+
+		public enum SessionMessageEncoderType : int
+		{
+			Header,
+			Delim,
+		}
+
+		[StructLayout(LayoutKind.Sequential, CharSet = _CharSet)]
+		public struct NetworkInitInfo
+		{
+			public NetworkConnectionType ConnectionType;
+			public SessionMessageEncoderType SessionEncoderType;
+		}
 
 		#endregion
 
@@ -64,6 +89,24 @@ namespace Maria.Server.NativeInterface
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern void IOContext_UnInit();
 
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern IntPtr NetworkInstance_Init(NetworkInitInfo info, OnSessionAcceptHandler onConnected, OnSessionConnectedHandler onAccept);
+
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void NetworkInstance_UnInit(IntPtr network);
+
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void NetworkInstance_StartListen(IntPtr network, string ip, int port);
+		
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void NetworkInstance_StopListen(IntPtr network);
+
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void NetworkInstance_ConnectTo(IntPtr network, string ip, int port);
+		
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void NetworkInstance_GetSessionCount(IntPtr network);
+		
 		#endregion
 		
 	}
