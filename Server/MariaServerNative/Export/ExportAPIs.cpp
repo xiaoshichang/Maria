@@ -67,11 +67,12 @@ void IOContext_UnInit()
 
 NetworkInstance* NetworkInstance_Init(NetworkInitInfo info,
                                       OnSessionConnectedCallbackPtr onConnected,
-                                      OnSessionAcceptCallbackPtr onAccept)
+                                      OnSessionAcceptCallbackPtr onAccept,
+                                      OnSessionDisconnectCallbackPtr onDisconnect)
 {
     if (info.ConnectionType == NetworkConnectionType::Tcp)
     {
-        return new TcpNetworkInstance(info, onConnected, onAccept);
+        return new TcpNetworkInstance(info, onConnected, onAccept, onDisconnect);
     }
     else
     {
@@ -102,4 +103,19 @@ void NetworkInstance_ConnectTo(NetworkInstance* network, const char* ip, int por
 unsigned int NetworkInstance_GetSessionCount(NetworkInstance* network)
 {
     return network->GetSessionCount();
+}
+
+void NetworkSession_Bind(NetworkSession* session, OnSessionReceiveCallbackPtr onReceive, OnSessionSendCallbackPtr onSend, OnSessionDisconnectCallbackPtr onDisconnect)
+{
+    session->Bind(onReceive, onSend);
+}
+
+void NetworkSession_Send(NetworkSession* session, const char* data, int length)
+{
+    session->Send(data, length);
+}
+
+void NetworkSession_Stop(NetworkSession* session)
+{
+    session->Stop();
 }

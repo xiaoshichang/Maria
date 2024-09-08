@@ -11,7 +11,8 @@ namespace Maria::Server::Native
     public:
         TcpNetworkInstance(NetworkInitInfo info,
                            OnSessionConnectedCallbackPtr onConnected,
-                           OnSessionAcceptCallbackPtr onAccept);
+                           OnSessionAcceptCallbackPtr onAccept,
+                           OnSessionDisconnectCallbackPtr onDisconnect);
         ~TcpNetworkInstance() override;
 
     public:
@@ -22,6 +23,9 @@ namespace Maria::Server::Native
 
     private:
         void Accept();
+
+    public:
+        void OnSessionDisconnect(TcpSession* session);
 
     private:
         boost::asio::ip::tcp::acceptor* acceptor_ = nullptr;

@@ -10,7 +10,7 @@ namespace Maria.Server.Core.Network
 			_NativeSession = nativeSession;
 		}
 
-		public void Send()
+		public void Send(byte[] data)
 		{
 			
 		}

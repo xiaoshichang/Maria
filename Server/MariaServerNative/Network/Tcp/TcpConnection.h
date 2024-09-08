@@ -11,11 +11,16 @@ namespace Maria::Server::Native
     class TcpConnection : public NetworkConnection
     {
     public:
-        explicit TcpConnection(TcpNetworkInstance* network, boost::asio::io_context* context);
+        explicit TcpConnection(boost::asio::io_context* context,
+                               OnConnectionReadCallback onRead,
+                               OnConnectionWriteCallback onWrite,
+                               OnConnectionDisconnectCallback onDisconnect);
+
         ~TcpConnection() override;
 
-        void StartReading() override;
-        void Write(const char *data, int length) override;
+        void ReadAtLeast(boost::asio::streambuf& buffer, int byteCount) override;
+        void ReadUntilDelim(boost::asio::streambuf& buffer) override;
+        void Write(const char *data, int length, bool cache) override;
         void Disconnect() override;
 
     protected:
@@ -30,8 +35,15 @@ namespace Maria::Server::Native
         }
 
     private:
-        TcpNetworkInstance* network_;
+        void Writing();
+
+    private:
         tcp::socket socket_;
+        bool writing_ = false;
+        bool closed_ = false;
+        std::vector<boost::asio::streambuf::const_buffers_type> to_write_buffers_;
+        std::vector<boost::asio::streambuf::const_buffers_type> writing_buffers_;
+        const boost::asio::detail::transfer_all_t WRITE_RULE = boost::asio::transfer_all();
     };
 }
 
