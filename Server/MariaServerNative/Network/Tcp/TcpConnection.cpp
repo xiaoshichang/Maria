@@ -7,10 +7,9 @@ using namespace Maria::Server::Native;
 
 TcpConnection::TcpConnection(boost::asio::io_context* context,
                              OnConnectionReadCallback onRead,
-                             OnConnectionWriteCallback onWrite,
                              OnConnectionDisconnectCallback onDisconnect)
     : socket_(*context)
-    , NetworkConnection(std::move(onRead), std::move(onWrite), std::move(onDisconnect))
+    , NetworkConnection(std::move(onRead), std::move(onDisconnect))
 {
 }
 
@@ -41,38 +40,54 @@ void TcpConnection::ReadUntilDelim(boost::asio::streambuf& buffer)
     boost::asio::async_read_until(socket_, buffer, '\n', callback);
 }
 
-void TcpConnection::Write(const char *data, int length, bool cache)
+void TcpConnection::WriteWithHeader(const char *header, int headerSize, const char *body, int bodySize)
 {
-    to_write_buffers_.push_back(boost::asio::buffer(data, length));
-    if (cache || writing_)
+    auto& buffer = GetBufferToWrite();
+    std::ostream os(&buffer);
+    os.write(header, headerSize);
+    os.write(body, bodySize);
+
+    if (writing_)
     {
         return;
     }
-    Writing();
+    DoWrite();
 }
 
-void TcpConnection::Writing()
+void TcpConnection::WriteWithDelim(const char *body, int bodySize, char delim)
 {
-    if (to_write_buffers_.empty())
+    auto& buffer = GetBufferToWrite();
+    std::ostream os(&buffer);
+    os.write(body, bodySize);
+    os.write(&delim, 1);
+
+    if (writing_)
     {
         return;
     }
-    writing_buffers_ = std::move(to_write_buffers_);
-    to_write_buffers_.clear();
-    writing_ = true;
+    DoWrite();
+}
+
+void TcpConnection::DoWrite()
+{
+    auto& buffer = GetBufferToWrite();
+    if (buffer.size() <= 0)
+    {
+        return;
+    }
 
     auto callback = [this](boost::system::error_code ec, std::size_t bytes_transferred)
     {
         OnWrite(ec, bytes_transferred);
     };
 
-    // https://www.gnu.org/software/libc/manual/html_node/Scatter_002dGather.html
-    boost::asio::async_write(socket_, writing_buffers_,  WRITE_RULE,callback);
+    SwitchBufferToWrite();
+    writing_ = true;
+    boost::asio::async_write(socket_, buffer,  WRITE_RULE, callback);
 }
 
 void TcpConnection::OnWrite(boost::system::error_code ec, std::size_t bytes_transferred)
 {
-    writing_ = false;
     if (ec)
     {
         Logger::Error(std::format("TcpConnection OnWrite error, what:{}, message:{}", ec.what(), ec.message()));
@@ -85,10 +100,8 @@ void TcpConnection::OnWrite(boost::system::error_code ec, std::size_t bytes_tran
         OnDisconnect();
         return;
     }
-
-    on_write_callback_(writing_buffers_.size());
-    writing_buffers_.clear();
-    Writing();
+    writing_ = false;
+    DoWrite();
 }
 
 void TcpConnection::OnRead(boost::system::error_code ec, std::size_t bytes_transferred)
@@ -123,5 +136,28 @@ void TcpConnection::OnDisconnect()
     socket_.close();
     on_disconnect_callback_();
 }
+
+boost::asio::streambuf &TcpConnection::GetBufferToWrite()
+{
+    if (write_to_1_)
+    {
+        return write_buffer_1_;
+    }
+    return write_buffer_2_;
+}
+
+void TcpConnection::SwitchBufferToWrite()
+{
+    write_to_1_  = !write_to_1_;
+    auto& buffer = GetBufferToWrite();
+    if (buffer.size() != 0)
+    {
+        Logger::Error("SwitchBufferToWrite");
+    }
+}
+
+
+
+
 
 

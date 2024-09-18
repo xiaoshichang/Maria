@@ -30,8 +30,8 @@ namespace Maria::Server::Native
     {
     public:
         explicit NetworkInstance(NetworkInitInfo info,
-                                 OnSessionConnectedCallbackPtr onConnected,
                                  OnSessionAcceptCallbackPtr onAccept,
+                                 OnSessionConnectedCallbackPtr onConnected,
                                  OnSessionDisconnectCallbackPtr onDisconnect);
         virtual ~NetworkInstance();
 

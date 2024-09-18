@@ -1,10 +1,11 @@
 ﻿namespace Maria.Server.Application.Server.GameServer
 {
-	public class GameServer : ServerBase.ServerBase
+	public partial class GameServer : ServerBase.ServerBase
 	{
 		public override void Init()
 		{
 			base.Init();
+			_TryConnectToGMServer();
 		}
 
 		public override void UnInit()

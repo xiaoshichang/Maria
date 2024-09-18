@@ -35,8 +35,8 @@ NativeAPI void IOContext_Run();
 NativeAPI void IOContext_UnInit();
 
 NativeAPI NetworkInstance* NetworkInstance_Init(NetworkInitInfo info,
-                                                OnSessionConnectedCallbackPtr onConnected,
                                                 OnSessionAcceptCallbackPtr onAccept,
+                                                OnSessionConnectedCallbackPtr onConnected,
                                                 OnSessionDisconnectCallbackPtr onDisconnect);
 NativeAPI void NetworkInstance_UnInit(NetworkInstance* network);
 NativeAPI void NetworkInstance_StartListen(NetworkInstance* network, const char* ip, int port);
@@ -44,7 +44,7 @@ NativeAPI void NetworkInstance_StopListen(NetworkInstance* network);
 NativeAPI void NetworkInstance_ConnectTo(NetworkInstance* network, const char* ip, int port);
 NativeAPI unsigned int NetworkInstance_GetSessionCount(NetworkInstance* network);
 
-NativeAPI void NetworkSession_Bind(NetworkSession* session, OnSessionReceiveCallbackPtr onReceive, OnSessionSendCallbackPtr onSend);
+NativeAPI void NetworkSession_Bind(NetworkSession* session, OnSessionReceiveCallbackPtr onReceive);
 NativeAPI void NetworkSession_Send(NetworkSession* session, const char* data, int length);
 NativeAPI void NetworkSession_Stop(NetworkSession* session);
 

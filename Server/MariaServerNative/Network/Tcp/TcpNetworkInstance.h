@@ -10,8 +10,8 @@ namespace Maria::Server::Native
     {
     public:
         TcpNetworkInstance(NetworkInitInfo info,
-                           OnSessionConnectedCallbackPtr onConnected,
                            OnSessionAcceptCallbackPtr onAccept,
+                           OnSessionConnectedCallbackPtr onConnected,
                            OnSessionDisconnectCallbackPtr onDisconnect);
         ~TcpNetworkInstance() override;
 

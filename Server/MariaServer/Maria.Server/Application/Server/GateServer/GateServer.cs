@@ -1,10 +1,11 @@
 ﻿namespace Maria.Server.Application.Server.GateServer
 {
-	public class GateServer : ServerBase.ServerBase
+	public partial class GateServer : ServerBase.ServerBase
 	{
 		public override void Init()
 		{
 			base.Init();
+			_TryConnectToGMServer();
 		}
 
 		public override void UnInit()

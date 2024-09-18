@@ -25,7 +25,6 @@ namespace Maria::Server::Native
 
     protected:
         void Receive() override;
-        void OnConnectionWrite(size_t bufferCount) override;
         void OnConnectionRead(size_t byteCount) override;
         void OnConnectionDisconnect() override;
 
@@ -36,10 +35,12 @@ namespace Maria::Server::Native
         }
 
     private:
+        void TryParseHeaderAndBody();
+
+    private:
         TcpNetworkInstance* network_ = nullptr;
         TcpConnection* connection_ = nullptr;
         boost::asio::streambuf read_buffer_;
-        std::queue<NetworkMessageHeader> headers_;
         const char DELIM = '\n';
     };
 }

@@ -199,7 +199,7 @@ namespace Maria.Server.Application
 			throw new IndexOutOfRangeException("index not found");
 		}
 
-		public int GetIndexByConfig(ServerConfigBase config)
+		public int GetIDByConfig(ServerConfigBase config)
 		{
 			if (_Config2IDMapping.TryGetValue(config, out var idx))
 			{

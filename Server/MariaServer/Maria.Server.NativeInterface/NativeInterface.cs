@@ -24,7 +24,9 @@ namespace Maria.Server.NativeInterface
 		public delegate void TimerCallback();
 		public delegate void OnSessionAcceptHandler(IntPtr session);
 		public delegate void OnSessionConnectedHandler(IntPtr session, int ec);
-
+		public delegate void OnSessionDisconnectHandler(IntPtr session);
+		
+		public delegate void OnSessionReceiveHandler(IntPtr data, int length);
 		#endregion
 
 		#region Struct
@@ -32,13 +34,13 @@ namespace Maria.Server.NativeInterface
 		public enum NetworkConnectionType : int
 		{
 			Tcp = 1,
-			Kcp
+			Kcp = 2,
 		}
 
 		public enum SessionMessageEncoderType : int
 		{
-			Header,
-			Delim,
+			Header = 1,
+			Delim = 2,
 		}
 
 		[StructLayout(LayoutKind.Sequential, CharSet = _CharSet)]
@@ -90,7 +92,7 @@ namespace Maria.Server.NativeInterface
 		public static extern void IOContext_UnInit();
 
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
-		public static extern IntPtr NetworkInstance_Init(NetworkInitInfo info, OnSessionAcceptHandler onConnected, OnSessionConnectedHandler onAccept);
+		public static extern IntPtr NetworkInstance_Init(NetworkInitInfo info, OnSessionAcceptHandler onConnected, OnSessionConnectedHandler onAccept, OnSessionDisconnectHandler onDisconnect);
 
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern void NetworkInstance_UnInit(IntPtr network);
@@ -106,6 +108,15 @@ namespace Maria.Server.NativeInterface
 		
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern void NetworkInstance_GetSessionCount(IntPtr network);
+		
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void NetworkSession_Bind(IntPtr session, OnSessionReceiveHandler onReceive);
+		
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void NetworkSession_Send(IntPtr session, IntPtr data, int length);
+		
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void NetworkSession_Stop(IntPtr session);
 		
 		#endregion
 		

@@ -10,9 +10,8 @@ TcpSession::TcpSession(TcpNetworkInstance* network, boost::asio::io_context* con
     : network_(network)
 {
     auto onRead = std::bind(&TcpSession::OnConnectionRead, this, std::placeholders::_1);
-    auto onWrite = std::bind(&TcpSession::OnConnectionWrite, this, std::placeholders::_1);
     auto onDisconnect = std::bind(&TcpSession::OnConnectionDisconnect, this);
-    connection_ = new TcpConnection(context, onRead, onWrite, onDisconnect);
+    connection_ = new TcpConnection(context, onRead, onDisconnect);
 }
 
 TcpSession::~TcpSession()
@@ -44,6 +43,7 @@ void TcpSession::Receive()
     }
     else
     {
+        Logger::Error("unsupported session encoder type.");
         throw;
     }
 }
@@ -53,19 +53,20 @@ void TcpSession::Send(const char *data, int length)
     auto& networkInfo = network_->GetNetworkInfo();
     if(networkInfo.SessionEncoderType == SessionMessageEncoderType::Header)
     {
-        headers_.emplace(length);
-        auto& header = headers_.back();
-        connection_->Write((const char*)&header, sizeof(header), true);
+        const int HEADER_SIZE = 4;
+        NetworkMessageHeader header{};
+        header.MessageLength = length;
+        connection_->WriteWithHeader((const char*)&header, HEADER_SIZE, data, length);
     }
     else if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Delim)
     {
-        connection_->Write(&DELIM, 1, true);
+        connection_->WriteWithDelim(data, length, DELIM);
     }
     else
     {
+        Logger::Error("unsupported session encoder type.");
         throw;
     }
-    connection_->Write(data, length, false);
 }
 
 void TcpSession::OnConnectionDisconnect()
@@ -73,19 +74,27 @@ void TcpSession::OnConnectionDisconnect()
     network_->OnSessionDisconnect(this);
 }
 
-void TcpSession::OnConnectionWrite(size_t bufferCount)
-{
-    for (int i = 0; i < bufferCount; ++i)
-    {
-        headers_.pop();
-    }
-    on_send_callback_(bufferCount);
-}
-
 void TcpSession::OnConnectionRead(size_t byteCount)
 {
     auto& networkInfo = network_->GetNetworkInfo();
     if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Header)
+    {
+        TryParseHeaderAndBody();
+        Receive();
+    }
+    else if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Delim)
+    {
+        throw;
+    }
+    else
+    {
+        throw;
+    }
+}
+
+void TcpSession::TryParseHeaderAndBody()
+{
+    while(true)
     {
         auto bufferSize = read_buffer_.size();
         if (bufferSize < sizeof(NetworkMessageHeader))
@@ -103,15 +112,5 @@ void TcpSession::OnConnectionRead(size_t byteCount)
         on_receive_callback_(data, header->MessageLength);
         read_buffer_.consume(header->MessageLength);
     }
-    else if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Delim)
-    {
-        auto length = read_buffer_.size();
-        const char* data = boost::asio::buffer_cast<const char*>(read_buffer_.data());
-        on_receive_callback_(data, length);
-        read_buffer_.consume(length);
-    }
-    else
-    {
-        throw;
-    }
+
 }

@@ -8,10 +8,10 @@ using namespace Maria::Server::Native;
 using boost::asio::ip::tcp;
 
 TcpNetworkInstance::TcpNetworkInstance(NetworkInitInfo info,
-                                       OnSessionConnectedCallbackPtr onConnected,
                                        OnSessionAcceptCallbackPtr onAccept,
+                                       OnSessionConnectedCallbackPtr onConnected,
                                        OnSessionDisconnectCallbackPtr onDisconnect)
-   : NetworkInstance(info, onConnected, onAccept, onDisconnect)
+   : NetworkInstance(info, onAccept,onConnected, onDisconnect)
 {
 }
 

@@ -14,22 +14,22 @@
   "GMServer": {
     "Name": "GMServer",
     "InnerIp": "127.0.0.1",
-    "InnerPort": 40000,
-    "TelnetPort": 40002
+    "InnerPort": 50000,
+    "TelnetPort": 50001
   },
   "GameServers":
   [
     {
       "Name": "GameServer1",
       "InnerIp": "127.0.0.1",
-      "InnerPort": 40100,
-      "TelnetPort": 40101
+      "InnerPort": 50100,
+      "TelnetPort": 50101
     },
     {
       "Name": "GameServer2",
       "InnerIp": "127.0.0.1",
-      "InnerPort": 40200,
-      "TelnetPort": 40201
+      "InnerPort": 50200,
+      "TelnetPort": 50201
     }
   ],
   "GateServers":
@@ -37,16 +37,18 @@
     {
       "Name": "GateServer1",
       "InnerIp": "127.0.0.1",
-      "InnerPort": 40300,
+      "InnerPort": 50300,
+      "TelnetPort": 50301,
       "OuterIp": "127.0.0.1",
-      "OuterPort": 40301
+      "OuterPort": 50302
     },
     {
       "Name": "GateServer2",
       "InnerIp": "127.0.0.1",
-      "InnerPort": 40400,
+      "InnerPort": 50400,
+      "TelnetPort": 50401,
       "OuterIp": "127.0.0.1",
-      "OuterPort": 40401
+      "OuterPort": 50402
     }
   ]
 }

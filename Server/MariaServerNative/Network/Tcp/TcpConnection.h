@@ -13,14 +13,14 @@ namespace Maria::Server::Native
     public:
         explicit TcpConnection(boost::asio::io_context* context,
                                OnConnectionReadCallback onRead,
-                               OnConnectionWriteCallback onWrite,
                                OnConnectionDisconnectCallback onDisconnect);
 
         ~TcpConnection() override;
 
         void ReadAtLeast(boost::asio::streambuf& buffer, int byteCount) override;
         void ReadUntilDelim(boost::asio::streambuf& buffer) override;
-        void Write(const char *data, int length, bool cache) override;
+        void WriteWithHeader(const char* header, int headerSize, const char* body, int bodySize) override;
+        void WriteWithDelim(const char* body, int bodySize, char delim) override;
         void Disconnect() override;
 
     protected:
@@ -35,14 +35,19 @@ namespace Maria::Server::Native
         }
 
     private:
-        void Writing();
+        void DoWrite();
+        boost::asio::streambuf& GetBufferToWrite();
+        void SwitchBufferToWrite();
 
     private:
         tcp::socket socket_;
-        bool writing_ = false;
         bool closed_ = false;
-        std::vector<boost::asio::streambuf::const_buffers_type> to_write_buffers_;
-        std::vector<boost::asio::streambuf::const_buffers_type> writing_buffers_;
+        bool writing_ = false;
+
+        bool write_to_1_ = true;
+        boost::asio::streambuf write_buffer_1_;
+        boost::asio::streambuf write_buffer_2_;
+
         const boost::asio::detail::transfer_all_t WRITE_RULE = boost::asio::transfer_all();
     };
 }

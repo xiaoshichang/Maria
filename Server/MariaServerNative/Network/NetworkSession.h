@@ -7,7 +7,6 @@ namespace Maria::Server::Native
     typedef void (*OnSessionConnectedCallbackPtr)(NetworkSession* session, const int ec);
     typedef void (*OnSessionDisconnectCallbackPtr)(NetworkSession* session);
     typedef void (*OnSessionReceiveCallbackPtr)(const char* data, size_t length);
-    typedef void (*OnSessionSendCallbackPtr)(size_t buffer_count);
 
     struct NetworkMessageHeader
     {
@@ -26,17 +25,14 @@ namespace Maria::Server::Native
 
     protected:
         virtual void Receive() = 0;
-        virtual void OnConnectionWrite(size_t bufferCount) = 0;
         virtual void OnConnectionRead(size_t byteCount) = 0;
         virtual void OnConnectionDisconnect() = 0;
 
     public:
-        void Bind(OnSessionReceiveCallbackPtr onReceive, OnSessionSendCallbackPtr onSend);
+        void Bind(OnSessionReceiveCallbackPtr onReceive);
 
     protected:
         OnSessionReceiveCallbackPtr on_receive_callback_ = nullptr;
-        OnSessionSendCallbackPtr on_send_callback_ = nullptr;
-
 
     };
 }

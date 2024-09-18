@@ -5,8 +5,8 @@
 using namespace Maria::Server::Native;
 
 NetworkInstance::NetworkInstance(NetworkInitInfo info,
-                                 OnSessionConnectedCallbackPtr onConnected,
                                  OnSessionAcceptCallbackPtr onAccept,
+                                 OnSessionConnectedCallbackPtr onConnected,
                                  OnSessionDisconnectCallbackPtr onDisconnect)
     : init_info_(info)
 {

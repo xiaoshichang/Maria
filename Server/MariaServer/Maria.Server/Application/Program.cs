@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Maria.Server.Application.Server.GameServer;
 using Maria.Server.Application.Server.GateServer;
 using Maria.Server.Application.Server.GMServer;
@@ -75,6 +78,7 @@ namespace Maria.Server.Application
 			Logger.Info($"ProcessorCount: {Environment.ProcessorCount}");
 		}
 		
+		
 		private static void _CreateServerByServerConfig()
 		{
 			if (ServerConfig is GMServerConfig)
@@ -94,6 +98,20 @@ namespace Maria.Server.Application
 				throw new Exception("unknown server type");
 			}
 		}
+
+		private static void _LoadGameplayAssemblies()
+		{
+			foreach (var gameplayAssembly in ServerGroupConfig.Common.GameplayAssemblies)
+			{
+				var path = Path.Join(Environment.CurrentDirectory, gameplayAssembly);
+				if (!File.Exists(path))
+				{
+					throw new FileNotFoundException($"{path} is not found.");
+				}
+				var assembly = Assembly.LoadFrom(path);
+				GameplayAssemblies.Add(assembly);
+			}
+		}
 		
 		static void Main(string[] args)
 		{
@@ -103,6 +121,7 @@ namespace Maria.Server.Application
 				_LoadConfig();
 				_InitLogger();
 				_LogApplicationEnvironment();
+				_LoadGameplayAssemblies();
 				_CreateServerByServerConfig();
 				
 				Server.Init();
@@ -127,6 +146,7 @@ namespace Maria.Server.Application
 		public static ServerGroupConfig ServerGroupConfig;
 		public static ServerConfigBase ServerConfig;
 		public static Server.ServerBase.ServerBase Server;
+		public static List<Assembly> GameplayAssemblies = new();
 	}
 }
 
