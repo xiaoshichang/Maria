@@ -24,12 +24,9 @@ namespace Maria::Server::Native
     private:
         void Accept();
 
-    public:
-        void OnSessionDisconnect(TcpSession* session);
 
     private:
         boost::asio::ip::tcp::acceptor* acceptor_ = nullptr;
-        std::set<TcpSession*> sessions_;
     };
 }
 

@@ -1,8 +1,11 @@
 #pragma once
 
+
 namespace Maria::Server::Native
 {
     class NetworkSession;
+    class NetworkInstance;
+
     typedef void (*OnSessionAcceptCallbackPtr)(NetworkSession* session);
     typedef void (*OnSessionConnectedCallbackPtr)(NetworkSession* session, const int ec);
     typedef void (*OnSessionDisconnectCallbackPtr)(NetworkSession* session);
@@ -16,6 +19,7 @@ namespace Maria::Server::Native
     class NetworkSession
     {
     public:
+        explicit NetworkSession(NetworkInstance* network);
         virtual ~NetworkSession() = default;
 
     public:
@@ -25,13 +29,13 @@ namespace Maria::Server::Native
 
     protected:
         virtual void Receive() = 0;
-        virtual void OnConnectionRead(size_t byteCount) = 0;
-        virtual void OnConnectionDisconnect() = 0;
+        virtual void OnDisconnect();
 
     public:
         void Bind(OnSessionReceiveCallbackPtr onReceive);
 
     protected:
+        NetworkInstance* network_ = nullptr;
         OnSessionReceiveCallbackPtr on_receive_callback_ = nullptr;
 
     };

@@ -21,5 +21,12 @@ NetworkInstance::~NetworkInstance()
     context_ = nullptr;
 }
 
+void NetworkInstance::OnDisconnect(NetworkSession *session)
+{
+    on_disconnect_callback_(session);
+    sessions_.erase(session);
+    delete session;
+}
+
 
 

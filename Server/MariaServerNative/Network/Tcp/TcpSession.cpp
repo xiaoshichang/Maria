@@ -1,23 +1,18 @@
 
 #include "TcpSession.h"
-#include "TcpConnection.h"
 #include "TcpNetworkInstance.h"
 #include "../../Logger/Logger.h"
 
 using namespace Maria::Server::Native;
 
 TcpSession::TcpSession(TcpNetworkInstance* network, boost::asio::io_context* context)
-    : network_(network)
+    : NetworkSession(network)
+    , socket_(*context)
 {
-    auto onRead = std::bind(&TcpSession::OnConnectionRead, this, std::placeholders::_1);
-    auto onDisconnect = std::bind(&TcpSession::OnConnectionDisconnect, this);
-    connection_ = new TcpConnection(context, onRead, onDisconnect);
 }
 
 TcpSession::~TcpSession()
 {
-    delete connection_;
-    connection_ = nullptr;
 }
 
 void TcpSession::Start()
@@ -27,7 +22,6 @@ void TcpSession::Start()
 
 void TcpSession::Stop()
 {
-    connection_->Disconnect();
 }
 
 void TcpSession::Receive()
@@ -35,11 +29,11 @@ void TcpSession::Receive()
     auto& networkInfo = network_->GetNetworkInfo();
     if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Header)
     {
-        connection_->ReadAtLeast(read_buffer_, 1);
+        ReadAtLeast(1);
     }
     else if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Delim)
     {
-        connection_->ReadUntilDelim(read_buffer_);
+        ReadUntilDelim();
     }
     else
     {
@@ -56,11 +50,11 @@ void TcpSession::Send(const char *data, int length)
         const int HEADER_SIZE = 4;
         NetworkMessageHeader header{};
         header.MessageLength = length;
-        connection_->WriteWithHeader((const char*)&header, HEADER_SIZE, data, length);
+        SendWithHeader((const char *) &header, HEADER_SIZE, data, length);
     }
     else if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Delim)
     {
-        connection_->WriteWithDelim(data, length, DELIM);
+        SendWithDelim(data, length);
     }
     else
     {
@@ -69,18 +63,73 @@ void TcpSession::Send(const char *data, int length)
     }
 }
 
-void TcpSession::OnConnectionDisconnect()
+void TcpSession::OnDisconnect()
 {
-    network_->OnSessionDisconnect(this);
+    if (closed_)
+    {
+        return;
+    }
+    closed_ = true;
+    socket_.close();
+    NetworkSession::OnDisconnect();
 }
 
-void TcpSession::OnConnectionRead(size_t byteCount)
+void TcpSession::TryParseHeaderAndBody()
 {
+    while(true)
+    {
+        auto bufferSize = receive_buffer_.size();
+        if (bufferSize < sizeof(NetworkMessageHeader))
+        {
+            return;
+        }
+        auto header = boost::asio::buffer_cast<const NetworkMessageHeader*>(receive_buffer_.data());
+        if (bufferSize < sizeof(NetworkMessageHeader) + header->MessageLength)
+        {
+            return;
+        }
+
+        receive_buffer_.consume(sizeof(NetworkMessageHeader));
+        const char* data = boost::asio::buffer_cast<const char*>(receive_buffer_.data());
+        on_receive_callback_(data, header->MessageLength);
+        receive_buffer_.consume(header->MessageLength);
+    }
+}
+
+void TcpSession::ReadAtLeast(int byteCount)
+{
+    auto read_rule = boost::asio::detail::transfer_at_least_t(byteCount);
+    auto callback = [this](boost::system::error_code ec, std::size_t bytes_transferred)
+    {
+        OnReceive(ec, bytes_transferred);
+    };
+    boost::asio::async_read(socket_, receive_buffer_, read_rule, callback);
+}
+
+void TcpSession::ReadUntilDelim()
+{
+
+}
+
+void TcpSession::OnReceive(boost::system::error_code ec, std::size_t bytes_transferred)
+{
+    if (ec)
+    {
+        Logger::Error(std::format("TcpSession OnReceive error, what:{}, message:{}", ec.what(), ec.message()));
+        OnDisconnect();
+        return;
+    }
+    if (bytes_transferred == 0)
+    {
+        Logger::Error("TcpSession OnReceive eof");
+        OnDisconnect();
+        return;
+    }
+
     auto& networkInfo = network_->GetNetworkInfo();
     if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Header)
     {
         TryParseHeaderAndBody();
-        Receive();
     }
     else if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Delim)
     {
@@ -90,27 +139,86 @@ void TcpSession::OnConnectionRead(size_t byteCount)
     {
         throw;
     }
+
+    Receive();
 }
 
-void TcpSession::TryParseHeaderAndBody()
+boost::asio::streambuf &TcpSession::GetBufferToSend()
 {
-    while(true)
+    if (use_send_buffer_1_)
     {
-        auto bufferSize = read_buffer_.size();
-        if (bufferSize < sizeof(NetworkMessageHeader))
-        {
-            return;
-        }
-        auto header = boost::asio::buffer_cast<const NetworkMessageHeader*>(read_buffer_.data());
-        if (bufferSize < sizeof(NetworkMessageHeader) + header->MessageLength)
-        {
-            return;
-        }
+        return send_buffer_1_;
+    }
+    return send_buffer_2_;
+}
 
-        read_buffer_.consume(sizeof(NetworkMessageHeader));
-        const char* data = boost::asio::buffer_cast<const char*>(read_buffer_.data());
-        on_receive_callback_(data, header->MessageLength);
-        read_buffer_.consume(header->MessageLength);
+void TcpSession::SwitchBufferToSend()
+{
+    use_send_buffer_1_  = !use_send_buffer_1_;
+}
+
+
+void TcpSession::SendWithHeader(const char *header, int headerSize, const char *body, int bodySize)
+{
+    auto& buffer = GetBufferToSend();
+    std::ostream os(&buffer);
+    os.write(header, headerSize);
+    os.write(body, bodySize);
+
+    if (sending_)
+    {
+        return;
+    }
+    DoSend();
+}
+
+void TcpSession::SendWithDelim(const char *body, int bodySize)
+{
+    auto& buffer = GetBufferToSend();
+    std::ostream os(&buffer);
+    os.write(body, bodySize);
+    os.write(&DELIM, 1);
+
+    if (sending_)
+    {
+        return;
+    }
+    DoSend();
+}
+
+void TcpSession::DoSend()
+{
+    auto& buffer = GetBufferToSend();
+    if (buffer.size() <= 0)
+    {
+        return;
     }
 
+    auto callback = [this](boost::system::error_code ec, std::size_t bytes_transferred)
+    {
+        OnSend(ec, bytes_transferred);
+    };
+
+    SwitchBufferToSend();
+    sending_ = true;
+    boost::asio::async_write(socket_, buffer,  WRITE_RULE, callback);
 }
+
+void TcpSession::OnSend(boost::system::error_code ec, std::size_t bytes_transferred)
+{
+    if (ec)
+    {
+        Logger::Error(std::format("TcpSession OnSend error, what:{}, message:{}", ec.what(), ec.message()));
+        OnDisconnect();
+        return;
+    }
+    if (bytes_transferred == 0)
+    {
+        Logger::Error("TcpSession OnSend eof");
+        OnDisconnect();
+        return;
+    }
+    sending_ = false;
+    DoSend();
+}
+

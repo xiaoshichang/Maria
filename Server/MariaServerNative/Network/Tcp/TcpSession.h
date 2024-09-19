@@ -1,6 +1,5 @@
 #pragma once
 #include "../NetworkSession.h"
-#include "TcpConnection.h"
 #include <boost/asio.hpp>
 #include <boost/asio/io_context.hpp>
 #include <queue>
@@ -21,26 +20,41 @@ namespace Maria::Server::Native
         void Start() override;
         void Stop() override;
         void Send(const char *data, int length) override;
-
+        void OnDisconnect() override;
 
     protected:
         void Receive() override;
-        void OnConnectionRead(size_t byteCount) override;
-        void OnConnectionDisconnect() override;
+
+    private:
+        void ReadAtLeast(int byteCount);
+        void ReadUntilDelim();
+        void OnReceive(boost::system::error_code ec, std::size_t bytes_transferred);
+        void TryParseHeaderAndBody();
+
+        boost::asio::streambuf& GetBufferToSend();
+        void SwitchBufferToSend();
+        void SendWithHeader(const char* header, int headerSize, const char* body, int bodySize);
+        void SendWithDelim(const char* body, int bodySize);
+        void DoSend();
+        void OnSend(boost::system::error_code ec, std::size_t bytes_transferred);
 
     public:
         tcp::socket& GetInternalSocket()
         {
-            return connection_->GetInternalSocket();
+            return socket_;
         }
 
     private:
-        void TryParseHeaderAndBody();
+        tcp::socket socket_;
+        boost::asio::streambuf receive_buffer_;
 
-    private:
-        TcpNetworkInstance* network_ = nullptr;
-        TcpConnection* connection_ = nullptr;
-        boost::asio::streambuf read_buffer_;
+        bool closed_ = false;
+        bool sending_ = false;
+        bool use_send_buffer_1_ = true;
+        boost::asio::streambuf send_buffer_1_;
+        boost::asio::streambuf send_buffer_2_;
+
+        const boost::asio::detail::transfer_all_t WRITE_RULE = boost::asio::transfer_all();
         const char DELIM = '\n';
     };
 }
