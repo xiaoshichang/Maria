@@ -12,12 +12,11 @@ public class NetworkSessionMessageSerializer
 	public static MemoryStream? SerializeToStream(NetworkSessionMessage message)
 	{
 		var stream = new MemoryStream();
-		
 		try
 		{
 			var tid = NetworkSessionMessage.GetTypeIDByType(message.GetType());
 			stream.Write(BitConverter.GetBytes(tid));
-			JsonSerializer.Serialize(stream, message);
+			JsonSerializer.Serialize(stream, message, message.GetType());
 			return stream;
 		}
 		catch (Exception e)

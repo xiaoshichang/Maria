@@ -190,7 +190,7 @@ namespace Maria.Server.Application
 			}
 		}
 
-		public ServerConfigBase GetConfigByIndex(int idx)
+		public ServerConfigBase GetConfigByID(int idx)
 		{
 			if (_ID2ConfigMapping.TryGetValue(idx, out var config))
 			{

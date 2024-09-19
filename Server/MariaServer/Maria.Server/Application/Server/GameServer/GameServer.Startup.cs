@@ -16,6 +16,6 @@ public partial class GameServer
 	{
 		var gmConfig = Program.ServerGroupConfig.GetGMConfig();
 		Logger.Info($"Connect to GMServer, {gmConfig.InnerIp}:{gmConfig.InnerPort}");
-		_GroupNetwork.ConnectTo(gmConfig.InnerIp, gmConfig.InnerPort);
+		_InnerNetwork.ConnectTo(gmConfig.InnerIp, gmConfig.InnerPort);
 	}
 }
