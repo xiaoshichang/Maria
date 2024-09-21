@@ -55,6 +55,7 @@ namespace Maria.Server.Application
 
 			ServerGroupConfig = groupConfig;
 			ServerConfig = serverConfig;
+			ServerID = groupConfig.GetIDByConfig(ServerConfig);
 		}
 		
 		private static void _InitLogger()
@@ -111,6 +112,7 @@ namespace Maria.Server.Application
 				var assembly = Assembly.LoadFrom(path);
 				GameplayAssemblies.Add(assembly);
 			}
+			Logger.Info($"_LoadGameplayAssemblies. {GameplayAssemblies.Count} assemblies loaded.");
 		}
 		
 		static void Main(string[] args)
@@ -145,6 +147,7 @@ namespace Maria.Server.Application
 		
 		public static ServerGroupConfig ServerGroupConfig;
 		public static ServerConfigBase ServerConfig;
+		public static int ServerID;
 		public static Server.ServerBase.ServerBase Server;
 		public static List<Assembly> GameplayAssemblies = new();
 	}

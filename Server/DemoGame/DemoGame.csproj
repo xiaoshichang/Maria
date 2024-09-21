@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Shared\Maria.Shared\Maria.Shared.csproj" />
+      <ProjectReference Include="..\MariaServer\Maria.Server.NativeInterface\Maria.Server.NativeInterface.csproj" />
+      <ProjectReference Include="..\MariaServer\Maria.Server\Maria.Server.csproj" />
+    </ItemGroup>
+
+</Project>

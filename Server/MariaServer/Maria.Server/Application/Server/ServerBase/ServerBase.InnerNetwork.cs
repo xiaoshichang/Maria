@@ -10,35 +10,6 @@ using Maria.Shared.Network;
 namespace Maria.Server.Application.Server.ServerBase;
 
 
-public class InnerNodeHandShakeReq : NetworkSessionMessage
-{
-	public string? ServerName { get; set; }
-	public int ServerID { get; set; }
-}
-
-public class InnerNodeHandShakeRsp : NetworkSessionMessage
-{
-	public string? ServerName { get; set; }
-	public int ServerID { get; set; }
-}
-
-public class SystemMsgGameConnectToGateNtf : NetworkSessionMessage
-{
-}
-
-public class SystemMsgGameReadyNtf : NetworkSessionMessage
-{
-	public int ServerID { get; set; }
-}
-
-public class SystemMsgStubInitReq : NetworkSessionMessage
-{
-}
-
-public class SystemMsgStubInitRsp : NetworkSessionMessage
-{
-}
-
 public abstract partial class ServerBase
 {
 	private void _RegisterNetworkSessionMessagesByReflection()
@@ -147,8 +118,16 @@ public abstract partial class ServerBase
 	protected virtual void _OnInnerNodeSessionRegister(int serverID, NetworkSession session)
 	{
 	}
-	
-	private 
+
+	public void SendToGMServer(NetworkSessionMessage message)
+	{
+		if (_GMSession == null)
+		{
+			Logger.Error("can not send message to gm.");
+			return;
+		}
+		_GMSession.Send(message);
+	}
 	
 	protected readonly NetworkInstance _InnerNetwork = new NetworkInstance();
 

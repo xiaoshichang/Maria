@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Maria.Server.Application.Server.ServerBase;
 using Maria.Server.Core.Network;
 using Maria.Server.Log;
@@ -38,12 +40,62 @@ public partial class GMServer
 		}
 	}
 
+	private StubDistributeTable _BuildStubDistributeTable()
+	{
+		var table = new StubDistributeTable();
+		var keyList = _AllGameSessions.Keys.ToList();
+		foreach (var (index, type) in _EntityManager.GetAllStubTypes())
+		{
+			table.Stub2Game[index] = keyList[Random.Shared.Next(keyList.Count)];
+		}
+		return table;
+	}
+
 	private void _OnAllGameServerReady()
 	{
 		Logger.Info("_OnAllGameServerReady");
-		
-		
+		_StubDistributeTable = _BuildStubDistributeTable();
+		var req = new SystemMsgStubInitReq
+		{
+			StubDistributeTable = _StubDistributeTable
+		};
+		foreach (var (_, game) in _AllGameSessions)
+		{
+			game.Send(req);
+		}
 	}
 
-	private readonly HashSet<int> _ReadyGameServers = new HashSet<int>();
+	private void _OnSystemMsgStubInitRsp(NetworkSession session, NetworkSessionMessage message)
+	{
+		var rsp = message as SystemMsgStubInitRsp;
+		if (_ReadyStub.Contains(rsp.StubID))
+		{
+			Logger.Error($"_OnSystemMsgStubInitRsp. duplicated stub. {rsp.StubID}");
+			return;
+		}
+		if (!_StubDistributeTable.Stub2Game.TryGetValue(rsp.StubID, out var serverID))
+		{
+			Logger.Error($"_OnSystemMsgStubInitRsp. unknown stub. {rsp.StubID}");
+			return;
+		}
+		if (rsp.ServerID != serverID)
+		{
+			Logger.Error($"_OnSystemMsgStubInitRsp. server miss match. {rsp.ServerID} != {serverID}");
+			return;
+		}
+		_ReadyStub.Add(rsp.StubID);
+		if (_ReadyStub.Count == _EntityManager.GetAllStubTypes().Count)
+		{
+			Logger.Info($"_OnAllStubReady. {_ReadyStub.Count} stubs.");
+			_OnAllStubReady();
+		}
+	}
+
+	private void _OnAllStubReady()
+	{
+	}
+
+	protected StubDistributeTable _StubDistributeTable;
+	private readonly HashSet<int> _ReadyGameServers = new();
+	private readonly HashSet<int> _ReadyStub = new();
 }

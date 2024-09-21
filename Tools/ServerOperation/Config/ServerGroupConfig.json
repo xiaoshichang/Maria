@@ -3,6 +3,7 @@
   {
     "GameplayAssemblies": 
     [
+      "..\\..\\Server\\DemoGame\\bin\\Debug\\net8.0\\DemoGame.dll"
     ],
     "LogPath": "Logs",
     "Database":

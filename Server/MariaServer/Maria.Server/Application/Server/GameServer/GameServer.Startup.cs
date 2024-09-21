@@ -5,6 +5,8 @@ using Maria.Server.Core.Timer;
 using Maria.Server.Log;
 using Maria.Shared.Network;
 
+#pragma warning disable
+
 namespace Maria.Server.Application.Server.GameServer;
 
 public partial class GameServer
@@ -20,14 +22,6 @@ public partial class GameServer
 		var gmConfig = Program.ServerGroupConfig.GetGMConfig();
 		Logger.Info($"Connect to GMServer, {gmConfig.InnerIp}:{gmConfig.InnerPort}");
 		_InnerNetwork.ConnectTo(gmConfig.InnerIp, gmConfig.InnerPort);
-	}
-	
-	private void _OnSystemMsgGameConnectToGate(NetworkSession session, NetworkSessionMessage message)
-	{
-		foreach (var gate in Program.ServerGroupConfig.GateServers)
-		{
-			_InnerNetwork.ConnectTo(gate.InnerIp, gate.InnerPort);
-		}
 	}
 	
 	protected override void _OnInnerNodeSessionRegister(int serverID, NetworkSession session)
@@ -48,4 +42,37 @@ public partial class GameServer
 			_GMSession.Send(msg);
 		}
 	}
+	
+	private void _OnSystemMsgGameConnectToGate(NetworkSession session, NetworkSessionMessage message)
+	{
+		foreach (var gate in Program.ServerGroupConfig.GateServers)
+		{
+			_InnerNetwork.ConnectTo(gate.InnerIp, gate.InnerPort);
+		}
+	}
+
+	private void _OnSystemMsgSystemMsgStubInitReq(NetworkSession session, NetworkSessionMessage message)
+	{
+		var req = message as SystemMsgStubInitReq;
+		Logger.Info($"_OnSystemMsgSystemMsgStubInitReq {req.StubDistributeTable.Stub2Game.Count}");
+		
+		_StubDistributeTable = req.StubDistributeTable;
+		foreach (var (tid, game) in req.StubDistributeTable.Stub2Game)
+		{
+			if (game != Program.ServerID)
+			{
+				continue;
+			}
+
+			var stubType = _EntityManager.GetStubTypeByIndex(tid);
+			if (stubType == null)
+			{
+				Logger.Error("stubType not found.");
+				return;
+			}
+			_EntityManager.CreateServerEntity(stubType);
+		}
+	}
+
+	protected StubDistributeTable _StubDistributeTable;
 }
