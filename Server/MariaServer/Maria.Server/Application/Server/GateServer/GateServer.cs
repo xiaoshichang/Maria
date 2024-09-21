@@ -12,6 +12,12 @@
 		{
 			base.UnInit();
 		}
+		
+		protected override void _RegisterNetworkSessionMessageHandlers()
+		{
+			base._RegisterNetworkSessionMessageHandlers();
+			
+		}
 	}
 }
 

@@ -16,12 +16,8 @@ add_library(MariaServerNative MODULE
         Timer/TimerMgr.cpp
         Network/NetworkInstance.cpp
         Network/NetworkSession.cpp
-        Network/NetworkConnection.cpp
         Network/Tcp/TcpNetworkInstance.cpp
         Network/Tcp/TcpSession.cpp
-        Network/Tcp/TcpSession.h
-        Network/Tcp/TcpConnection.cpp
-        Network/Tcp/TcpConnection.h
 )
 
 target_include_directories(MariaServerNative PRIVATE ${Boost_INCLUDE_DIRS})

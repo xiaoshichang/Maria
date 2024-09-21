@@ -1,26 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json.Serialization;
 using Maria.Server.Core.Network;
 using Maria.Server.Log;
 using Maria.Server.NativeInterface;
 using Maria.Shared.Network;
 
+#pragma warning disable
+
 namespace Maria.Server.Application.Server.ServerBase;
 
 
-public class GroupNodeHandShakeReq : NetworkSessionMessage
+public class InnerNodeHandShakeReq : NetworkSessionMessage
 {
 	public string? ServerName { get; set; }
 	public int ServerID { get; set; }
 }
 
-public class GroupNodeHandShakeRsp : NetworkSessionMessage
+public class InnerNodeHandShakeRsp : NetworkSessionMessage
 {
 	public string? ServerName { get; set; }
 	public int ServerID { get; set; }
+}
+
+public class SystemMsgGameConnectToGateNtf : NetworkSessionMessage
+{
+}
+
+public class SystemMsgGameReadyNtf : NetworkSessionMessage
+{
+	public int ServerID { get; set; }
+}
+
+public class SystemMsgStubInitReq : NetworkSessionMessage
+{
+}
+
+public class SystemMsgStubInitRsp : NetworkSessionMessage
+{
 }
 
 public abstract partial class ServerBase
@@ -36,10 +52,10 @@ public abstract partial class ServerBase
 		}
 	}
 	
-	private void _RegisterNetworkSessionMessageHandlers()
+	protected virtual void _RegisterNetworkSessionMessageHandlers()
 	{
-		NetworkMessageHandlers.RegisterNetworkMessageHandler<GroupNodeHandShakeReq>(_OnGroupNodeHandShakeReq);
-		NetworkMessageHandlers.RegisterNetworkMessageHandler<GroupNodeHandShakeRsp>(_OnGroupNodeHandShakeRsp);
+		NetworkMessageHandlers.RegisterNetworkMessageHandler<InnerNodeHandShakeReq>(_OnInnerNodeHandShakeReq);
+		NetworkMessageHandlers.RegisterNetworkMessageHandler<InnerNodeHandShakeRsp>(_OnInnerNodeHandShakeRsp);
 	}
 	
 	private void _InitGroupNetwork()
@@ -68,7 +84,7 @@ public abstract partial class ServerBase
 
 	private void _OnSessionConnected(NetworkSession session)
 	{
-		var req = new GroupNodeHandShakeReq
+		var req = new InnerNodeHandShakeReq
 		{
 			ServerName = Program.ServerConfig.Name,
 			ServerID = Program.ServerGroupConfig.GetIDByConfig(Program.ServerConfig)
@@ -87,11 +103,11 @@ public abstract partial class ServerBase
 		handlers?.Invoke(session, message);
 	}
 
-	private void _OnGroupNodeHandShakeReq(NetworkSession session, NetworkSessionMessage message)
+	private void _OnInnerNodeHandShakeReq(NetworkSession session, NetworkSessionMessage message)
 	{
-		var req = message as GroupNodeHandShakeReq;
-		_RegisterGroupNodeSession(req.ServerID, session);
-		var rsp = new GroupNodeHandShakeRsp()
+		var req = message as InnerNodeHandShakeReq;
+		_RegisterInnerNodeSession(req.ServerID, session);
+		var rsp = new InnerNodeHandShakeRsp()
 		{
 			ServerName = Program.ServerConfig.Name,
 			ServerID = Program.ServerGroupConfig.GetIDByConfig(Program.ServerConfig)
@@ -99,13 +115,13 @@ public abstract partial class ServerBase
 		session.Send(rsp);
 	}
 
-	private void _OnGroupNodeHandShakeRsp(NetworkSession session, NetworkSessionMessage message)
+	private void _OnInnerNodeHandShakeRsp(NetworkSession session, NetworkSessionMessage message)
 	{
-		var rsp = message as GroupNodeHandShakeRsp;
-		_RegisterGroupNodeSession(rsp.ServerID, session);
+		var rsp = message as InnerNodeHandShakeRsp;
+		_RegisterInnerNodeSession(rsp.ServerID, session);
 	}
 
-	private void _RegisterGroupNodeSession(int serverID, NetworkSession session)
+	private void _RegisterInnerNodeSession(int serverID, NetworkSession session)
 	{
 		_AllSessions[serverID] = session;
 		var config = Program.ServerGroupConfig.GetConfigByID(serverID);
@@ -125,6 +141,11 @@ public abstract partial class ServerBase
 		{
 			Logger.Error("unknown server type.");
 		}
+		_OnInnerNodeSessionRegister(serverID, session);
+	}
+
+	protected virtual void _OnInnerNodeSessionRegister(int serverID, NetworkSession session)
+	{
 	}
 	
 	private 
