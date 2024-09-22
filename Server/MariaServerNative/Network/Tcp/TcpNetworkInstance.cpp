@@ -3,6 +3,7 @@
 #include <boost/bind/bind.hpp>
 #include "TcpNetworkInstance.h"
 #include "../../Logger/Logger.h"
+#include "../../IOContext/IOContext.h"
 
 using namespace Maria::Server::Native;
 using boost::asio::ip::tcp;
@@ -25,7 +26,7 @@ void TcpNetworkInstance::StartListen(const char *ip, int port)
     Logger::Info(std::format("StartListen at:{}:{}", ip, port));
     auto address = boost::asio::ip::address_v4::from_string(ip);
     auto endpoint = tcp::endpoint(address, port);
-    acceptor_ = new tcp::acceptor(*context_, endpoint);
+    acceptor_ = new tcp::acceptor(*IOContext::Get(), endpoint);
     Accept();
 }
 
@@ -38,7 +39,7 @@ void TcpNetworkInstance::StopListen()
 
 void TcpNetworkInstance::Accept()
 {
-    auto session = new TcpSession(this, context_);
+    auto session = new TcpSession(this, IOContext::Get());
     auto callback = [this, session](boost::system::error_code ec)
     {
         if (ec == boost::asio::error::operation_aborted)
@@ -66,7 +67,7 @@ void TcpNetworkInstance::ConnectTo(const char *ip, int port)
 {
     auto address = boost::asio::ip::address_v4::from_string(ip);
     auto endpoint = tcp::endpoint(address, port);
-    auto session = new TcpSession(this, context_);
+    auto session = new TcpSession(this, IOContext::Get());
     auto& socket = session->GetInternalSocket();
 
     auto callback = [this, session](const boost::system::error_code &ec)

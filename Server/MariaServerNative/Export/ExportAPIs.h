@@ -10,6 +10,7 @@
 
 #include "../Timer/TimerMgr.h"
 #include "../Network/Tcp/TcpNetworkInstance.h"
+#include "../Network/Kcp/KcpNetworkInstance.h"
 #include "../Network/NetworkSession.h"
 
 using namespace Maria::Server::Native;

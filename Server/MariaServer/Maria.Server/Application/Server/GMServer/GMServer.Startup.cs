@@ -44,7 +44,7 @@ public partial class GMServer
 	{
 		var table = new StubDistributeTable();
 		var keyList = _AllGameSessions.Keys.ToList();
-		foreach (var (index, type) in _EntityManager.GetAllStubTypes())
+		foreach (var (index, _) in _EntityManager.GetAllStubTypes())
 		{
 			table.Stub2Game[index] = keyList[Random.Shared.Next(keyList.Count)];
 		}
@@ -93,6 +93,11 @@ public partial class GMServer
 
 	private void _OnAllStubReady()
 	{
+		var ntf = new SystemMsgOpenGateNtf();
+		foreach (var gate in _AllGateSessions.Values)
+		{
+			gate.Send(ntf);
+		}
 	}
 
 	protected StubDistributeTable _StubDistributeTable;

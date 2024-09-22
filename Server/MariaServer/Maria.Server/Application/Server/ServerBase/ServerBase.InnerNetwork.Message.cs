@@ -4,7 +4,7 @@ using Maria.Shared.Network;
 namespace Maria.Server.Application.Server.ServerBase;
 
 
-public class InnerNodeHandShakeReq : NetworkSessionMessage
+public class InnerSessionHandShakeReq : NetworkSessionMessage
 {
 	public string? ServerName { get; set; }
 	public int ServerID { get; set; }
@@ -39,4 +39,9 @@ public class SystemMsgStubInitRsp : NetworkSessionMessage
 {
 	public int ServerID { get; set; }
 	public int StubID { get; set; }
+}
+
+public class SystemMsgOpenGateNtf : NetworkSessionMessage
+{
+	
 }

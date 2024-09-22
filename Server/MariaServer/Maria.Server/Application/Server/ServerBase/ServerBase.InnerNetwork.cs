@@ -25,8 +25,8 @@ public abstract partial class ServerBase
 	
 	protected virtual void _RegisterNetworkSessionMessageHandlers()
 	{
-		NetworkMessageHandlers.RegisterNetworkMessageHandler<InnerNodeHandShakeReq>(_OnInnerNodeHandShakeReq);
-		NetworkMessageHandlers.RegisterNetworkMessageHandler<InnerNodeHandShakeRsp>(_OnInnerNodeHandShakeRsp);
+		NetworkMessageHandlers.RegisterNetworkMessageHandler<InnerSessionHandShakeReq>(_OnInnerSessionHandShakeReq);
+		NetworkMessageHandlers.RegisterNetworkMessageHandler<InnerNodeHandShakeRsp>(_OnInnerSessionHandShakeRsp);
 	}
 	
 	private void _InitGroupNetwork()
@@ -40,7 +40,7 @@ public abstract partial class ServerBase
 			ConnectionType = NativeAPI.NetworkConnectionType.Tcp,
 			SessionEncoderType = NativeAPI.SessionMessageEncoderType.Header
 		};
-		_InnerNetwork.Init(initInfo, _OnSessionAccepted, _OnSessionConnected, _OnSessionDisconnected, _OnSessionReceiveMessage);
+		_InnerNetwork.Init(initInfo, _OnInnerSessionAccepted, _OnInnerSessionConnected, _OnInnerSessionDisconnected, _OnInnerSessionReceiveMessage);
 		_InnerNetwork.StartListen(Program.ServerConfig.InnerIp, Program.ServerConfig.InnerPort);
 	}
 
@@ -49,13 +49,13 @@ public abstract partial class ServerBase
 		_InnerNetwork.UnInit();
 	}
 
-	private void _OnSessionAccepted(NetworkSession session)
+	private void _OnInnerSessionAccepted(NetworkSession session)
 	{
 	}
 
-	private void _OnSessionConnected(NetworkSession session)
+	private void _OnInnerSessionConnected(NetworkSession session)
 	{
-		var req = new InnerNodeHandShakeReq
+		var req = new InnerSessionHandShakeReq
 		{
 			ServerName = Program.ServerConfig.Name,
 			ServerID = Program.ServerGroupConfig.GetIDByConfig(Program.ServerConfig)
@@ -63,21 +63,26 @@ public abstract partial class ServerBase
 		session.Send(req);
 	}
 
-	private void _OnSessionDisconnected(NetworkSession session)
+	private void _OnInnerSessionDisconnected(NetworkSession session)
 	{
 		Logger.Info($"_OnSessionDisconnected");
 	}
 
-	private void _OnSessionReceiveMessage(NetworkSession session, NetworkSessionMessage message)
+	private void _OnInnerSessionReceiveMessage(NetworkSession session, NetworkSessionMessage message)
 	{
 		var handlers = NetworkMessageHandlers.GetHandlers(message.GetType());
-		handlers?.Invoke(session, message);
+		if (handlers == null)
+		{
+			Logger.Warning($"no handler found. {message}");
+			return;
+		}
+		handlers.Invoke(session, message);
 	}
 
-	private void _OnInnerNodeHandShakeReq(NetworkSession session, NetworkSessionMessage message)
+	private void _OnInnerSessionHandShakeReq(NetworkSession session, NetworkSessionMessage message)
 	{
-		var req = message as InnerNodeHandShakeReq;
-		_RegisterInnerNodeSession(req.ServerID, session);
+		var req = message as InnerSessionHandShakeReq;
+		_RegisterInnerSession(req.ServerID, session);
 		var rsp = new InnerNodeHandShakeRsp()
 		{
 			ServerName = Program.ServerConfig.Name,
@@ -86,13 +91,13 @@ public abstract partial class ServerBase
 		session.Send(rsp);
 	}
 
-	private void _OnInnerNodeHandShakeRsp(NetworkSession session, NetworkSessionMessage message)
+	private void _OnInnerSessionHandShakeRsp(NetworkSession session, NetworkSessionMessage message)
 	{
 		var rsp = message as InnerNodeHandShakeRsp;
-		_RegisterInnerNodeSession(rsp.ServerID, session);
+		_RegisterInnerSession(rsp.ServerID, session);
 	}
 
-	private void _RegisterInnerNodeSession(int serverID, NetworkSession session)
+	private void _RegisterInnerSession(int serverID, NetworkSession session)
 	{
 		_AllSessions[serverID] = session;
 		var config = Program.ServerGroupConfig.GetConfigByID(serverID);

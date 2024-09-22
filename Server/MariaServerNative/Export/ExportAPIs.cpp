@@ -76,7 +76,7 @@ NetworkInstance* NetworkInstance_Init(NetworkInitInfo info,
     }
     else
     {
-        return nullptr;
+        return new KcpNetworkInstance(info, onAccept, onConnected, onDisconnect);
     }
 }
 

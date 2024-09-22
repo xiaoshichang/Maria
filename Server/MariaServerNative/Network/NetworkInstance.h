@@ -45,7 +45,6 @@ namespace Maria::Server::Native
 
     protected:
         NetworkInitInfo init_info_;
-        boost::asio::io_context* context_ = nullptr;
         OnSessionAcceptCallbackPtr on_accept_callback_ = nullptr;
         OnSessionConnectedCallbackPtr on_connected_callback_ = nullptr;
         OnSessionDisconnectCallbackPtr on_disconnect_callback_ = nullptr;

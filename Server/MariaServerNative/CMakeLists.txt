@@ -18,6 +18,12 @@ add_library(MariaServerNative MODULE
         Network/NetworkSession.cpp
         Network/Tcp/TcpNetworkInstance.cpp
         Network/Tcp/TcpSession.cpp
+        3rd/kcp/ikcp.h
+        3rd/kcp/ikcp.c
+        Network/Kcp/KcpNetworkInstance.cpp
+        Network/Kcp/KcpNetworkInstance.h
+        Network/Kcp/KcpSession.cpp
+        Network/Kcp/KcpSession.h
 )
 
 target_include_directories(MariaServerNative PRIVATE ${Boost_INCLUDE_DIRS})
