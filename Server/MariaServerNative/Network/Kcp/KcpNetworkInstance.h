@@ -1,7 +1,9 @@
 #pragma once
 
 #include <boost/asio.hpp>
+#include <boost/array.hpp>
 #include "../NetworkInstance.h"
+#include "KcpSession.h"
 
 using boost::asio::ip::udp;
 
@@ -22,8 +24,19 @@ namespace Maria::Server::Native
         void StopListen() override;
         void ConnectTo(const char* ip, int port) override;
         unsigned int GetSessionCount() override;
+        int Send(const char *buf, int len, ikcpcb *kcp, void *user);
 
     private:
-        udp::socket* socket_ = nullptr;
+        void Update();
+        void Receive();
+        void OnReceive(const boost::system::error_code& error, std::size_t bytes_transferred);
+
+
+    private:
+
+        udp::socket* udp_socket_ = nullptr;
+        udp::endpoint udp_remote_endpoint_;
+        char* receive_buffer_ = nullptr;
+        std::unordered_map<udp::endpoint, KcpSession*> sessions_;
     };
 }

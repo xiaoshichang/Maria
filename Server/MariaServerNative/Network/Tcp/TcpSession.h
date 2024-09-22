@@ -17,13 +17,13 @@ namespace Maria::Server::Native
         ~TcpSession() override;
 
     public:
-        void Start() override;
-        void Stop() override;
+        void Start();
+        void Stop();
         void Send(const char *data, int length) override;
-        void OnDisconnect() override;
+        void OnDisconnect();
 
-    protected:
-        void Receive() override;
+    private:
+        void Receive();
 
     private:
         void ReadAtLeast(int byteCount);
@@ -45,6 +45,7 @@ namespace Maria::Server::Native
         }
 
     private:
+        TcpNetworkInstance* network_ = nullptr;
         tcp::socket socket_;
         boost::asio::streambuf receive_buffer_;
 

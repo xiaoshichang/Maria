@@ -6,7 +6,7 @@
 using namespace Maria::Server::Native;
 
 TcpSession::TcpSession(TcpNetworkInstance* network, boost::asio::io_context* context)
-    : NetworkSession(network)
+    : network_(network)
     , socket_(*context)
 {
 }
@@ -71,7 +71,8 @@ void TcpSession::OnDisconnect()
     }
     closed_ = true;
     socket_.close();
-    NetworkSession::OnDisconnect();
+
+    network_->OnDisconnect(this);
 }
 
 void TcpSession::TryParseHeaderAndBody()

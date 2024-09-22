@@ -117,5 +117,4 @@ void NetworkSession_Send(NetworkSession* session, const char* data, int length)
 
 void NetworkSession_Stop(NetworkSession* session)
 {
-    session->Stop();
 }

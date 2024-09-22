@@ -20,6 +20,7 @@ namespace Maria::Server::Native
         void StopListen() override;
         void ConnectTo(const char* ip, int port) override;
         unsigned int GetSessionCount() override;
+        void OnDisconnect(TcpSession* session);
 
     private:
         void Accept();
@@ -27,6 +28,8 @@ namespace Maria::Server::Native
 
     private:
         boost::asio::ip::tcp::acceptor* acceptor_ = nullptr;
+        std::set<TcpSession*> sessions_;
+
     };
 }
 

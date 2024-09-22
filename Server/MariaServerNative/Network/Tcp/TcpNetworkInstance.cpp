@@ -93,5 +93,11 @@ unsigned int TcpNetworkInstance::GetSessionCount()
     return sessions_.size();
 }
 
+void TcpNetworkInstance::OnDisconnect(TcpSession *session)
+{
+    on_disconnect_callback_(session);
+    sessions_.erase(session);
+    delete session;
+}
 
 
