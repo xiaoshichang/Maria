@@ -1,5 +1,4 @@
-﻿using Maria.Client.Core.Log;
-
+﻿
 namespace Maria.Client.Core.Asset.AssetProviderAssetBundleMode
 {
 	public class AssetProviderAssetBundleMode : IAssetProvider

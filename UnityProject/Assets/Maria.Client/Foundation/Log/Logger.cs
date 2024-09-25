@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
-namespace Maria.Client.Core.Log
+namespace Maria.Client.Foundation.Log
 {
 	public enum LogLevel : byte
 	{
@@ -68,9 +68,6 @@ namespace Maria.Client.Core.Log
 		{
 			_PrintRuntimePlatform();
 			_PrintBuildType();
-			Debug("This is a Debug Message");
-			Warning("This is a Warning Message");
-			Error("This is a Error Message");
 		}
 
 		private static string _BuildRecord(LogLevel level, string message)

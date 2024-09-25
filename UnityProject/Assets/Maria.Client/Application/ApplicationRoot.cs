@@ -1,5 +1,6 @@
 ﻿using System;
-using Maria.Client.Core.Log;
+using Maria.Client.Foundation.Log;
+using Maria.Core.Timer;
 using UnityEngine;
 
 namespace Maria.Client.Application
@@ -10,17 +11,19 @@ namespace Maria.Client.Application
 		{
 			DontDestroyOnLoad(gameObject);
 			MLogger.Init();
+			TimerManager.Init();
 			_InitAssetManager();
 		}
 
 		private void Update()
 		{
-			
+			TimerManager.Update();
 		}
 
 		private void OnApplicationQuit()
 		{
 			_UnInitAssetManager();
+			TimerManager.UnInit();
 		}
 	}
 }

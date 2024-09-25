@@ -1,4 +1,4 @@
-﻿using Maria.Client.Core.Log;
+﻿using Maria.Client.Foundation.Log;
 
 namespace Maria.Client.Core.Asset.AssetProviderEditorMode
 {
