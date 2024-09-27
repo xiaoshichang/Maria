@@ -75,27 +75,7 @@ void TcpSession::OnDisconnect()
     network_->OnDisconnect(this);
 }
 
-void TcpSession::TryParseHeaderAndBody()
-{
-    while(true)
-    {
-        auto bufferSize = receive_buffer_.size();
-        if (bufferSize < sizeof(NetworkMessageHeader))
-        {
-            return;
-        }
-        auto header = boost::asio::buffer_cast<const NetworkMessageHeader*>(receive_buffer_.data());
-        if (bufferSize < sizeof(NetworkMessageHeader) + header->MessageLength)
-        {
-            return;
-        }
 
-        receive_buffer_.consume(sizeof(NetworkMessageHeader));
-        const char* data = boost::asio::buffer_cast<const char*>(receive_buffer_.data());
-        on_receive_callback_(data, header->MessageLength);
-        receive_buffer_.consume(header->MessageLength);
-    }
-}
 
 void TcpSession::ReadAtLeast(int byteCount)
 {
@@ -109,7 +89,6 @@ void TcpSession::ReadAtLeast(int byteCount)
 
 void TcpSession::ReadUntilDelim()
 {
-
 }
 
 void TcpSession::OnReceive(boost::system::error_code ec, std::size_t bytes_transferred)

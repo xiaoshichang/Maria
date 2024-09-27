@@ -29,7 +29,6 @@ namespace Maria::Server::Native
         void ReadAtLeast(int byteCount);
         void ReadUntilDelim();
         void OnReceive(boost::system::error_code ec, std::size_t bytes_transferred);
-        void TryParseHeaderAndBody();
 
         boost::asio::streambuf& GetBufferToSend();
         void SwitchBufferToSend();
@@ -47,7 +46,6 @@ namespace Maria::Server::Native
     private:
         TcpNetworkInstance* network_ = nullptr;
         tcp::socket socket_;
-        boost::asio::streambuf receive_buffer_;
 
         bool closed_ = false;
         bool sending_ = false;
@@ -56,7 +54,6 @@ namespace Maria::Server::Native
         boost::asio::streambuf send_buffer_2_;
 
         const boost::asio::detail::transfer_all_t WRITE_RULE = boost::asio::transfer_all();
-        const char DELIM = '\n';
     };
 }
 

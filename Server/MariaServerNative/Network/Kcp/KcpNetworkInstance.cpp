@@ -6,12 +6,16 @@
 
 using namespace Maria::Server::Native;
 
+const char* KcpNetworkInstance::KCP_CONNECT_REQUEST = "MARIA FRAMEWORK KCP CONNECT REQUEST";
+const char* KcpNetworkInstance::KCP_CONNECT_RESPOND = "MARIA FRAMEWORK KCP CONNECT RESPOND";
+
+
 KcpNetworkInstance::KcpNetworkInstance(NetworkInitInfo info, OnSessionAcceptCallbackPtr onAccept,
                                        OnSessionConnectedCallbackPtr onConnected,
                                        OnSessionDisconnectCallbackPtr onDisconnect)
         : NetworkInstance(info, onAccept, onConnected, onDisconnect)
 {
-    receive_buffer_ = new char[8192];
+    udp_receive_buffer_ = new char[MAX_UDP_PACKET_SIZE];
     auto callback = [this]()
     {
         Update();
@@ -22,8 +26,8 @@ KcpNetworkInstance::KcpNetworkInstance(NetworkInitInfo info, OnSessionAcceptCall
 
 KcpNetworkInstance::~KcpNetworkInstance()
 {
-    delete[] receive_buffer_;
-    receive_buffer_ = nullptr;
+    delete[] udp_receive_buffer_;
+    udp_receive_buffer_ = nullptr;
 }
 
 
@@ -47,9 +51,16 @@ void KcpNetworkInstance::ConnectTo(const char *ip, int port)
     Logger::Error("invalid operation.");
 }
 
+void KcpNetworkInstance::OnDisconnect(KcpSession *session)
+{
+    on_disconnect_callback_(session);
+    sessions_.erase(session->GetRemoteEndPoint());
+    delete session;
+}
+
 unsigned int KcpNetworkInstance::GetSessionCount()
 {
-    return 0;
+    return sessions_.size();
 }
 
 void KcpNetworkInstance::Update()
@@ -66,7 +77,7 @@ void KcpNetworkInstance::Receive()
     {
         OnReceive(ec, bytes_transferred);
     };
-    udp_socket_->async_receive_from(boost::asio::buffer(receive_buffer_, 8192), udp_remote_endpoint_, callback);
+    udp_socket_->async_receive_from(boost::asio::buffer(udp_receive_buffer_, MAX_UDP_PACKET_SIZE), udp_remote_endpoint_, callback);
 }
 
 void KcpNetworkInstance::OnReceive(const boost::system::error_code &ec, std::size_t bytes_transferred)
@@ -79,18 +90,32 @@ void KcpNetworkInstance::OnReceive(const boost::system::error_code &ec, std::siz
     }
 
     auto session = sessions_.find(udp_remote_endpoint_);
-    if (session == sessions_.end())
+    if (session != sessions_.end())
     {
-        Logger::Warning(std::format("session not found. {}:{}", udp_remote_endpoint_.address().to_string(), udp_remote_endpoint_.port()));
-        Receive();
-        return;
+        session->second->OnReceive(udp_receive_buffer_, bytes_transferred);
     }
-
-    session->second->OnReceive(receive_buffer_, bytes_transferred);
+    else
+    {
+        auto sid = AllocateSessionID();
+        auto newSession = new KcpSession(this, sid, udp_remote_endpoint_);
+        sessions_[udp_remote_endpoint_] = newSession;
+        newSession->OnReceive(udp_receive_buffer_, bytes_transferred);
+    }
+    Receive();
 }
 
-int KcpNetworkInstance::Send(const char *buf, int len, ikcpcb *kcp, void *user)
+size_t KcpNetworkInstance::Send(KcpSession *session, const char *buf, size_t len)
 {
-    return 0;
+    return udp_socket_->send_to(boost::asio::buffer(buf, len), session->GetRemoteEndPoint());
 }
+
+
+uint32_t KcpNetworkInstance::AllocateSessionID()
+{
+    static uint32_t sessionID = 0;
+    return sessionID++;
+}
+
+
+
 

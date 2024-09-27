@@ -1,6 +1,8 @@
 #pragma once
 
 
+#include <boost/asio/streambuf.hpp>
+
 namespace Maria::Server::Native
 {
     class NetworkSession;
@@ -26,9 +28,14 @@ namespace Maria::Server::Native
 
     public:
         void Bind(OnSessionReceiveCallbackPtr onReceive);
+    protected:
+        void TryParseHeaderAndBody();
+
 
     protected:
         OnSessionReceiveCallbackPtr on_receive_callback_ = nullptr;
+        boost::asio::streambuf receive_buffer_;
+        const char DELIM = '\n';
 
     };
 }
