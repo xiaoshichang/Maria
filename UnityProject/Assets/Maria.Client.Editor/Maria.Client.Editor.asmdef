@@ -1,0 +1,14 @@
+{
+    "name": "Maria.Client.Editor",
+    "rootNamespace": "Maria.Client.Editor",
+    "references": ["GUID:4a91c09ff13e8f04b854399d8bba0a25"],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
