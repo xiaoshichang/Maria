@@ -6,7 +6,7 @@
 using namespace Maria::Server::Native;
 
 TcpSession::TcpSession(TcpNetworkInstance* network, boost::asio::io_context* context)
-    : network_(network)
+    : NetworkSession(network)
     , socket_(*context)
 {
 }
@@ -42,26 +42,6 @@ void TcpSession::Receive()
     }
 }
 
-void TcpSession::Send(const char *data, int length)
-{
-    auto& networkInfo = network_->GetNetworkInfo();
-    if(networkInfo.SessionEncoderType == SessionMessageEncoderType::Header)
-    {
-        const int HEADER_SIZE = 4;
-        NetworkMessageHeader header{};
-        header.MessageLength = length;
-        SendWithHeader((const char *) &header, HEADER_SIZE, data, length);
-    }
-    else if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Delim)
-    {
-        SendWithDelim(data, length);
-    }
-    else
-    {
-        Logger::Error("unsupported session encoder type.");
-        throw;
-    }
-}
 
 void TcpSession::OnDisconnect()
 {
@@ -72,7 +52,7 @@ void TcpSession::OnDisconnect()
     closed_ = true;
     socket_.close();
 
-    network_->OnDisconnect(this);
+    dynamic_cast<TcpNetworkInstance*>(network_)->OnDisconnect(this);
 }
 
 

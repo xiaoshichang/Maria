@@ -17,21 +17,18 @@ namespace Maria::Server::Native
         ~KcpSession() override;
 
     public:
-        void Send(const char* data, int length) override;
-
-    public:
         void OnDisconnect();
         void OnReceive(const char* data, std::size_t length);
-        void Update();
+        void Update(unsigned int ts);
         const udp::endpoint& GetRemoteEndPoint() { return remote_endpoint_; }
 
     private:
-        void SendWithHeader(const char* header, int headerSize, const char* body, int bodySize);
+        void SendWithHeader(const char* header, int headerSize, const char* body, int bodySize) override;
+        void SendWithDelim(const char* body, int bodySize) override;
         void SendConnectRespond();
         void HandleSessionData(const char *data, std::size_t length);
 
     private:
-        KcpNetworkInstance* network_;
         uint32_t session_id_;
         ikcpcb *kcp_;
         udp::endpoint remote_endpoint_;
