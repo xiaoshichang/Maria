@@ -1,27 +1,27 @@
 
 # unity project
-UnityProject/[Ll]ibrary/
-UnityProject/[Tt]emp/
-UnityProject/[Oo]bj/
-UnityProject/[Bb]uild/
-UnityProject/[Bb]uilds/
-UnityProject/[Ll]ogs/
-UnityProject/[Uu]ser[Ss]ettings/
+Client/UnityProject/[Ll]ibrary/
+Client/UnityProject/[Tt]emp/
+Client/UnityProject/[Oo]bj/
+Client/UnityProject/[Bb]uild/
+Client/UnityProject/[Bb]uilds/
+Client/UnityProject/[Ll]ogs/
+Client/UnityProject/[Uu]ser[Ss]ettings/
 
-UnityProject/**/*.csproj
-UnityProject/**/*.unityproj
-UnityProject/**/*.sln
-UnityProject/**/*.suo
-UnityProject/**/*.tmp
-UnityProject/**/*.user
-UnityProject/**/*.userprefs
-UnityProject/**/*.pidb
-UnityProject/**/*.booproj
-UnityProject/**/*.svd
-UnityProject/**/*.pdb
-UnityProject/**/*.mdb
-UnityProject/**/*.opendb
-UnityProject/**/*.VC.db
+Client/UnityProject/**/*.csproj
+Client/UnityProject/**/*.unityproj
+Client/UnityProject/**/*.sln
+Client/UnityProject/**/*.suo
+Client/UnityProject/**/*.tmp
+Client/UnityProject/**/*.user
+Client/UnityProject/**/*.userprefs
+Client/UnityProject/**/*.pidb
+Client/UnityProject/**/*.booproj
+Client/UnityProject/**/*.svd
+Client/UnityProject/**/*.pdb
+Client/UnityProject/**/*.mdb
+Client/UnityProject/**/*.opendb
+Client/UnityProject/**/*.VC.db
 
 
 # maria server
