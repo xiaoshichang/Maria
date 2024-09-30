@@ -65,9 +65,11 @@ unsigned int KcpNetworkInstance::GetSessionCount()
 
 void KcpNetworkInstance::Update()
 {
+    auto ts = std::chrono::high_resolution_clock::now().time_since_epoch();
+    auto tsInMs = std::chrono::duration_cast<std::chrono::milliseconds>(ts).count();
     for (auto& pair : sessions_)
     {
-        pair.second->Update();
+        pair.second->Update(tsInMs);
     }
 }
 

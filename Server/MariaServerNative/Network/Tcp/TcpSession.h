@@ -19,7 +19,6 @@ namespace Maria::Server::Native
     public:
         void Start();
         void Stop();
-        void Send(const char *data, int length) override;
         void OnDisconnect();
 
     private:
@@ -32,8 +31,8 @@ namespace Maria::Server::Native
 
         boost::asio::streambuf& GetBufferToSend();
         void SwitchBufferToSend();
-        void SendWithHeader(const char* header, int headerSize, const char* body, int bodySize);
-        void SendWithDelim(const char* body, int bodySize);
+        void SendWithHeader(const char* header, int headerSize, const char* body, int bodySize) override;
+        void SendWithDelim(const char* body, int bodySize) override;
         void DoSend();
         void OnSend(boost::system::error_code ec, std::size_t bytes_transferred);
 
@@ -44,7 +43,6 @@ namespace Maria::Server::Native
         }
 
     private:
-        TcpNetworkInstance* network_ = nullptr;
         tcp::socket socket_;
 
         bool closed_ = false;
