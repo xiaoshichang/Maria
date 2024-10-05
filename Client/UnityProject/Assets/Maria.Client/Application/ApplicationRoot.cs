@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Maria.Client.Core.Asset;
+using Maria.Client.Core.Coroutine;
 using Maria.Client.Core.UI;
 using Maria.Client.Foundation.Log;
 using Maria.Client.Gameplay;
@@ -14,9 +15,11 @@ namespace Maria.Client.Application
 	{
 		private void Start()
 		{
+			Instance = this;
 			DontDestroyOnLoad(gameObject);
 			
 			MLogger.Init();
+			CoroutineManager.Init();
 			AssetManager.Init();
 			TimerManager.Init();
 			UIManager.Init(Assemblies);
@@ -40,8 +43,10 @@ namespace Maria.Client.Application
 			UIManager.UnInit();
 			TimerManager.UnInit();
 			AssetManager.UnInit();
+			CoroutineManager.UnInit();
 		}
 
 		public List<string> Assemblies;
+		public static ApplicationRoot Instance;
 	}
 }

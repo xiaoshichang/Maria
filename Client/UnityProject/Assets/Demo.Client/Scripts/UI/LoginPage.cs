@@ -1,6 +1,11 @@
-using Maria.Client.Core.UI;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
+
+using UnityEngine;
 using UnityEngine.UI;
+using Maria.Client.Core.UI;
+
 
 namespace Demo.Client.UI
 {

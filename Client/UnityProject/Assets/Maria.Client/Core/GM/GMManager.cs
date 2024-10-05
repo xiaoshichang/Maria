@@ -43,6 +43,8 @@ namespace Maria.Core.GM
 		{
 			Object.Destroy(_Root);
 			_AllGMCommands.Clear();
+			
+			MLogger.Info($"UnInit GMManager OK.");
 		}
 		
 		

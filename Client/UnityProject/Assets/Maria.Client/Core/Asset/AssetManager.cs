@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using Maria.Client.Foundation.Log;
+using UnityEditor;
 
 namespace Maria.Client.Core.Asset
 {
@@ -7,12 +8,14 @@ namespace Maria.Client.Core.Asset
 		public static void Init()
 		{
 			_InitProvider();
+			MLogger.Info($"Init AssetManager OK. {_Provider.GetType().Name}");
 		}
 
 
 		public static void UnInit()
 		{
 			_UnInitProvider();
+			MLogger.Info($"UnInit AssetManager OK.");
 		}
 		
 

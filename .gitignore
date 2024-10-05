@@ -7,6 +7,7 @@ Client/UnityProject/[Bb]uild/
 Client/UnityProject/[Bb]uilds/
 Client/UnityProject/[Ll]ogs/
 Client/UnityProject/[Uu]ser[Ss]ettings/
+Client/UnityProject/Assets/StreamingAssets/
 
 Client/UnityProject/**/*.csproj
 Client/UnityProject/**/*.unityproj

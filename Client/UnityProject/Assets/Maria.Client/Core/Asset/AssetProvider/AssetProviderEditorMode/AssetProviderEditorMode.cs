@@ -23,6 +23,7 @@ namespace Maria.Client.Core.Asset.AssetProviderEditorMode
 
 		public override void ReleaseAsset(AssetRequestHandler handler)
 		{
+			handler.OnReleaseAsset();
 		}
 	}
 }
