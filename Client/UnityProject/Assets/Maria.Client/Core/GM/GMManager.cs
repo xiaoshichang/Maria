@@ -127,7 +127,7 @@ namespace Maria.Core.GM
 		private static void _PrintCandidates(string prefix)
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.Append("\n>>>>>>>>>> relative commands >>>>>>>>>>\n");
+			sb.Append("\n>>>>>>>>>>>> relative commands >>>>>>>>>>>>\n");
 			foreach (var kv in _AllGMCommands)
 			{
 				if (kv.Key.StartsWith(prefix))
