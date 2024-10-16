@@ -12,13 +12,24 @@ namespace Maria.Client.Editor.Asset
 		private const string _MenuPath_Windows = "Maria/Asset/Build AssetBundle/Windows";
 		private const string _MenuPath_IOS = "Maria/Asset/Build AssetBundle/IOS";
 		private const string _MenuPath_Android = "Maria/Asset/Build AssetBundle/Android";
-        
 
-		[MenuItem(_MenuPath_Windows)]
-		private static void _BuildWindows()
+
+		private static AssetBundleBuild GetFrameworkAsbBuild()
 		{
-			var allBuilds = new List<AssetBundleBuild>();
+			var dirs = new List<string>()
+			{
+				"Assets/Maria.Client/Core/Prototype/Asb"
+			};
+			var build = new AssetBundleBuild
+			{
+				assetBundleName = "Maria",
+				assetNames = AssetBundleBuildHelper.CollectAllAssetFromDirs(dirs)
+			};
+			return build;
+		}
 
+		private static AssetBundleBuild GetGameplayBuild()
+		{
 			var dirs = new List<string>()
 			{
 				"Assets/Demo.Client/Asb/UI"
@@ -28,8 +39,16 @@ namespace Maria.Client.Editor.Asset
 				assetBundleName = "Demo",
 				assetNames = AssetBundleBuildHelper.CollectAllAssetFromDirs(dirs)
 			};
-			
-			allBuilds.Add(build);
+			return build;
+		}
+		
+		
+		[MenuItem(_MenuPath_Windows)]
+		private static void _BuildWindows()
+		{
+			var allBuilds = new List<AssetBundleBuild>();
+			allBuilds.Add(GetGameplayBuild());
+			allBuilds.Add(GetFrameworkAsbBuild());
 			
 			var output = AssetProviderAssetBundleMode.AssetBundleRootWindows;
 			FileUtils.MakeSureDirectory(output);
