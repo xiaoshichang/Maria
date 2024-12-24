@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Maria.Core.GM
+namespace Maria.Client.Core.GM
 {
     public class GMCommand
     {

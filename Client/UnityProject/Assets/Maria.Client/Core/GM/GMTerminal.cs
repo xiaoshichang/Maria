@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Maria.Core.GM
+namespace Maria.Client.Core.GM
 {
 	public enum TerminalLogItemType
 	{
@@ -61,7 +61,7 @@ namespace Maria.Core.GM
 			if (!_Listening)
 			{
 				_Listening = true;
-				Application.logMessageReceived += _OnUnityMessage;
+				UnityEngine.Application.logMessageReceived += _OnUnityMessage;
 			}
 		}
 
@@ -70,7 +70,7 @@ namespace Maria.Core.GM
 			if (_Listening)
 			{
 				_Listening = false;
-				Application.logMessageReceived -= _OnUnityMessage;
+				UnityEngine.Application.logMessageReceived -= _OnUnityMessage;
 				_items.Clear();
 			}
 		}

@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Maria.Client.Core.Asset;
 using Maria.Client.Core.Coroutine;
+using Maria.Client.Core.Network;
 using Maria.Client.Core.UI;
 using Maria.Client.Foundation.Log;
-using Maria.Client.Gameplay;
-using Maria.Core.GM;
-using Maria.Core.Timer;
+using Maria.Client.Core.Timer;
+using Maria.Client.Core.GM;
+
 using UnityEngine;
 
 namespace Maria.Client.Application
@@ -22,6 +22,8 @@ namespace Maria.Client.Application
 			CoroutineManager.Init();
 			AssetManager.Init();
 			TimerManager.Init();
+			
+			NetworkManager.Init();
 			UIManager.Init(Assemblies);
 			GMManager.Init(Assemblies);
 			
@@ -32,6 +34,7 @@ namespace Maria.Client.Application
 		private void Update()
 		{
 			TimerManager.Update();
+			NetworkManager.Tick();
 		}
 
 		private void OnApplicationQuit()
@@ -41,6 +44,8 @@ namespace Maria.Client.Application
 			
 			GMManager.UnInit();
 			UIManager.UnInit();
+			NetworkManager.UnInit();
+			
 			TimerManager.UnInit();
 			AssetManager.UnInit();
 			CoroutineManager.UnInit();

@@ -11,7 +11,7 @@ public partial class GateServer
 	{
 		var initInfo = new NativeAPI.NetworkInitInfo()
 		{
-			ConnectionType = NativeAPI.NetworkConnectionType.Kcp,
+			ConnectionType = NativeAPI.NetworkConnectionType.Tcp,
 			SessionEncoderType = NativeAPI.SessionMessageEncoderType.Header
 		};
 		_ClientNetwork.Init(initInfo, 
@@ -19,6 +19,8 @@ public partial class GateServer
 			_OnClientSessionConnected, 
 			_OnClientSessionDisconnected, 
 			_OnClientSessionReceiveMessage);
+		
+		Logger.Info($"_InitClientNetwork {initInfo.ConnectionType}");
 	}
 
 	private void _UnInitClientNetwork()

@@ -7,7 +7,7 @@ using Maria.Client.Foundation.Log;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Maria.Core.GM
+namespace Maria.Client.Core.GM
 {
 	public class GMManagerInitParam
 	{

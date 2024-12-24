@@ -2,7 +2,7 @@
 
 #pragma warning disable
 
-namespace Maria.Core.Timer
+namespace Maria.Client.Core.Timer
 {
 	public delegate void TimeoutCallback(object? arg);
 	

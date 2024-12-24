@@ -39,17 +39,19 @@ namespace Maria.Client.Editor.Asset
 				assetBundleName = "Demo",
 				assetNames = AssetBundleBuildHelper.CollectAllAssetFromDirs(dirs)
 			};
+			
 			return build;
 		}
-		
 		
 		[MenuItem(_MenuPath_Windows)]
 		private static void _BuildWindows()
 		{
-			var allBuilds = new List<AssetBundleBuild>();
-			allBuilds.Add(GetGameplayBuild());
-			allBuilds.Add(GetFrameworkAsbBuild());
-			
+			var allBuilds = new List<AssetBundleBuild>
+			{
+				GetGameplayBuild(),
+				GetFrameworkAsbBuild()
+			};
+
 			var output = AssetProviderAssetBundleMode.AssetBundleRootWindows;
 			FileUtils.MakeSureDirectory(output);
 			

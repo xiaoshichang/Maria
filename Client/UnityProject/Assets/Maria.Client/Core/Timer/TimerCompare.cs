@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Maria.Core.Timer;
 
 #pragma warning disable
 
-namespace Maria.Core.Timer
+namespace Maria.Client.Core.Timer
 {
 	public class TimerCompare : IComparer<TimerInstance>
 	{

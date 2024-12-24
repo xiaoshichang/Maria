@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Maria.Core.GM
+namespace Maria.Client.Core.GM
 {
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class GMAttribute : Attribute

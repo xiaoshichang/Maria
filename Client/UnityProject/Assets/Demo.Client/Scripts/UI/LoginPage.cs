@@ -41,6 +41,9 @@ namespace Demo.Client.UI
 		
 		private void _OnLoginButtonClick()
 		{
+			
+			
+			
 		}
 
 		private void _OnCloseButtonClick()

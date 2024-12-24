@@ -5,7 +5,7 @@ using Maria.Client.Foundation.Utils;
 
 #pragma warning disable
 
-namespace Maria.Core.Timer
+namespace Maria.Client.Core.Timer
 {
 
 	public static class TimerManager

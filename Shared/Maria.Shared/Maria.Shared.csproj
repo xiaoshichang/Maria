@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <Target Name="CopyToUnity" AfterTargets="PostBuildEvent" Condition="'$(TargetFramework)' == 'netstandard2.1'">
-      <Exec Command="copy $(ProjectDir)bin\$(Configuration)\$(TargetFramework)\$(TargetFileName) $(ProjectDir)..\..\UnityProject\Assets\Plugins\$(TargetFileName)" />
+      <Exec Command="copy $(ProjectDir)bin\$(Configuration)\$(TargetFramework)\$(TargetFileName) $(ProjectDir)..\..\Client\UnityProject\Assets\Plugins\$(TargetFileName)" />
     </Target>
 
 </Project>

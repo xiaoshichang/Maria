@@ -10,7 +10,8 @@ const char* KcpNetworkInstance::KCP_CONNECT_REQUEST = "MARIA FRAMEWORK KCP CONNE
 const char* KcpNetworkInstance::KCP_CONNECT_RESPOND = "MARIA FRAMEWORK KCP CONNECT RESPOND";
 
 
-KcpNetworkInstance::KcpNetworkInstance(NetworkInitInfo info, OnSessionAcceptCallbackPtr onAccept,
+KcpNetworkInstance::KcpNetworkInstance(NetworkInitInfo info,
+                                       OnSessionAcceptCallbackPtr onAccept,
                                        OnSessionConnectedCallbackPtr onConnected,
                                        OnSessionDisconnectCallbackPtr onDisconnect)
         : NetworkInstance(info, onAccept, onConnected, onDisconnect)
