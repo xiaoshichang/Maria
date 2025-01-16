@@ -10,6 +10,11 @@ void Logger_Init(const char* dir, const char* fileName)
     Logger::Init(dir, fileName);
 }
 
+void Logger_UnInit()
+{
+    Logger::Finalize();
+}
+
 void Logger_Debug(const char* message)
 {
     Logger::Debug(message, LogTag::Managed);
@@ -76,7 +81,7 @@ NetworkInstance* NetworkInstance_Init(NetworkInitInfo info,
     }
     else
     {
-        return new KcpNetworkInstance(info, onAccept, onConnected, onDisconnect);
+        return nullptr;
     }
 }
 
@@ -105,9 +110,9 @@ unsigned int NetworkInstance_GetSessionCount(NetworkInstance* network)
     return network->GetSessionCount();
 }
 
-void NetworkSession_Bind(NetworkSession* session, OnSessionReceiveCallbackPtr onReceive)
+void NetworkSession_Bind(NetworkSession* session, OnSessionReceiveCallbackPtr onReceive, OnSessionSendCallbackPtr onSend)
 {
-    session->Bind(onReceive);
+    session->Bind(onReceive, onSend);
 }
 
 void NetworkSession_Send(NetworkSession* session, const char* data, int length)
@@ -117,4 +122,9 @@ void NetworkSession_Send(NetworkSession* session, const char* data, int length)
 
 void NetworkSession_Stop(NetworkSession* session)
 {
+}
+
+void NetworkSession_ConsumeReceiveBuffer(NetworkSession* session, int count)
+{
+    session->ConsumeReceiveBuffer(count);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include <boost/asio.hpp>
 #include <boost/asio/streambuf.hpp>
 
 
@@ -19,11 +19,7 @@ namespace Maria::Server::Native
     typedef void (*OnSessionConnectedCallbackPtr)(NetworkSession* session, const int ec);
     typedef void (*OnSessionDisconnectCallbackPtr)(NetworkSession* session);
     typedef void (*OnSessionReceiveCallbackPtr)(const char* data, size_t length);
-
-    struct NetworkMessageHeader
-    {
-        unsigned int MessageLength;
-    };
+    typedef void (*OnSessionSendCallbackPtr)(size_t bufferCount);
 
     class NetworkSession
     {
@@ -32,22 +28,20 @@ namespace Maria::Server::Native
         virtual ~NetworkSession() = default;
 
     public:
-        void Send(const char* data, int length);
+        virtual void Send(const char* data, int length) = 0;
+        virtual void ConsumeReceiveBuffer(int count) = 0;
+    protected:
+        virtual void Receive() = 0;
+        virtual void OnReceive(boost::system::error_code ec, std::size_t bytes_transferred) = 0;
+        virtual void OnSend(boost::system::error_code ec, std::size_t bytes_transferred, int buffer_count) = 0;
 
     public:
-        void Bind(OnSessionReceiveCallbackPtr onReceive);
-    protected:
-        virtual void SendWithHeader(const char* header, int headerSize, const char* body, int bodySize) = 0;
-        virtual void SendWithDelim(const char* body, int bodySize) = 0;
-        void TryParseHeaderAndBody();
-
+        void Bind(OnSessionReceiveCallbackPtr onReceive, OnSessionSendCallbackPtr onSend);
 
     protected:
         NetworkInstance* network_;
         OnSessionReceiveCallbackPtr on_receive_callback_ = nullptr;
-        boost::asio::streambuf receive_buffer_;
-        const char DELIM = '\n';
-
+        OnSessionSendCallbackPtr on_send_callback_ = nullptr;
     };
 }
 

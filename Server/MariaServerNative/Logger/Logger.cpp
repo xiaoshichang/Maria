@@ -11,6 +11,9 @@ using namespace Maria::Server::Native;
 
 src::severity_logger_mt<logging::trivial::severity_level> Logger::core_logger_;
 src::severity_logger_mt<logging::trivial::severity_level> Logger::managed_logger_;
+boost::shared_ptr<sinks::synchronous_sink<sinks::basic_text_ostream_backend<char>>> Logger::console_sink_;
+boost::shared_ptr<sinks::synchronous_sink< sinks::text_file_backend>> Logger::file_sink_;
+
 
 void Logger::Init(const char* dir, const char* fileName)
 {
@@ -38,9 +41,9 @@ void Logger::InitConsoleSink()
                                    % expr::message;
 
     // console
-    auto consoleSink = logging::add_console_log();
-    consoleSink->set_formatter(formatter);
-    consoleSink->set_filter(logging::trivial::severity >= logging::trivial::debug);
+    console_sink_ = logging::add_console_log();
+    console_sink_->set_formatter(formatter);
+    console_sink_->set_filter(logging::trivial::severity >= logging::trivial::debug);
 }
 
 void Logger::InitFileSink(const char* target, const char* fileName)
@@ -53,20 +56,24 @@ void Logger::InitFileSink(const char* target, const char* fileName)
         % expr::message;
 
     // file
-    auto fileSink = logging::add_file_log(
+    file_sink_ = logging::add_file_log(
         keywords::open_mode = std::ios_base::app,
         keywords::target = target,
         keywords::file_name = fileName
     );
 
-    fileSink->set_formatter(formatter);
-    fileSink->set_filter(logging::trivial::severity >= logging::trivial::debug);
-    fileSink->locked_backend()->auto_flush();
+    file_sink_->set_formatter(formatter);
+    file_sink_->set_filter(logging::trivial::severity >= logging::trivial::debug);
+    file_sink_->locked_backend()->auto_flush();
 }
 
 void Logger::Finalize()
 {
+    console_sink_->flush();
+    console_sink_ = nullptr;
 
+    file_sink_->flush();
+    file_sink_ = nullptr;
 }
 
 void Logger::Warning(const char* const message, LogTag tag)

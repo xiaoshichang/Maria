@@ -69,6 +69,11 @@ void TcpSession::ReadAtLeast(int byteCount)
 
 void TcpSession::ReadUntilDelim()
 {
+    auto callback = [this](boost::system::error_code ec, std::size_t bytes_transferred)
+    {
+        OnReceive(ec, bytes_transferred);
+    };
+    boost::asio::async_read_until(socket_, receive_buffer_, "\n", callback);
 }
 
 void TcpSession::OnReceive(boost::system::error_code ec, std::size_t bytes_transferred)
@@ -86,85 +91,47 @@ void TcpSession::OnReceive(boost::system::error_code ec, std::size_t bytes_trans
         return;
     }
 
-    auto& networkInfo = network_->GetNetworkInfo();
-    if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Header)
-    {
-        TryParseHeaderAndBody();
-    }
-    else if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Delim)
-    {
-        throw;
-    }
-    else
-    {
-        throw;
-    }
-
+    const char* data = boost::asio::buffer_cast<const char*>(receive_buffer_.data());
+    on_receive_callback_(data, receive_buffer_.size());
     Receive();
 }
 
-boost::asio::streambuf &TcpSession::GetBufferToSend()
+void TcpSession::ConsumeReceiveBuffer(int count)
 {
-    if (use_send_buffer_1_)
-    {
-        return send_buffer_1_;
-    }
-    return send_buffer_2_;
+    receive_buffer_.consume(count);
 }
 
-void TcpSession::SwitchBufferToSend()
+void TcpSession::Send(const char *data, int length)
 {
-    use_send_buffer_1_  = !use_send_buffer_1_;
-}
-
-
-void TcpSession::SendWithHeader(const char *header, int headerSize, const char *body, int bodySize)
-{
-    auto& buffer = GetBufferToSend();
-    std::ostream os(&buffer);
-    os.write(header, headerSize);
-    os.write(body, bodySize);
-
-    if (sending_)
+    send_queue_.emplace_back(data, length);
+    auto buffer = send_queue_[0];
+    if (!sending_)
     {
-        return;
+        DoSend();
     }
-    DoSend();
-}
-
-void TcpSession::SendWithDelim(const char *body, int bodySize)
-{
-    auto& buffer = GetBufferToSend();
-    std::ostream os(&buffer);
-    os.write(body, bodySize);
-    os.write(&DELIM, 1);
-
-    if (sending_)
-    {
-        return;
-    }
-    DoSend();
 }
 
 void TcpSession::DoSend()
 {
-    auto& buffer = GetBufferToSend();
-    if (buffer.size() <= 0)
+    if (send_queue_.empty())
     {
         return;
     }
 
-    auto callback = [this](boost::system::error_code ec, std::size_t bytes_transferred)
+    auto callback = [=, this](boost::system::error_code ec, std::size_t bytes_transferred)
     {
-        OnSend(ec, bytes_transferred);
+        OnSend(ec, bytes_transferred, 1);
     };
 
-    SwitchBufferToSend();
+    auto buffer = send_queue_[0];
+    send_queue_.erase(send_queue_.begin());
     sending_ = true;
+
+    // todo: scatter/gather io
     boost::asio::async_write(socket_, buffer,  WRITE_RULE, callback);
 }
 
-void TcpSession::OnSend(boost::system::error_code ec, std::size_t bytes_transferred)
+void TcpSession::OnSend(boost::system::error_code ec, std::size_t bytes_transferred, int buffer_count)
 {
     if (ec)
     {
@@ -179,6 +146,11 @@ void TcpSession::OnSend(boost::system::error_code ec, std::size_t bytes_transfer
         return;
     }
     sending_ = false;
+
+    // let session owner known that there are {buffer_count} buffers sent.
+    on_send_callback_(buffer_count);
+
     DoSend();
 }
+
 

@@ -10,7 +10,6 @@
 
 #include "../Timer/TimerMgr.h"
 #include "../Network/Tcp/TcpNetworkInstance.h"
-#include "../Network/Kcp/KcpNetworkInstance.h"
 #include "../Network/NetworkSession.h"
 
 using namespace Maria::Server::Native;
@@ -21,6 +20,7 @@ extern "C"
 #endif
 
 NativeAPI void Logger_Init(const char* dir, const char* fileName);
+NativeAPI void Logger_UnInit();
 NativeAPI void Logger_Debug(const char* message);
 NativeAPI void Logger_Info(const char* message);
 NativeAPI void Logger_Warning(const char* message);
@@ -45,9 +45,10 @@ NativeAPI void NetworkInstance_StopListen(NetworkInstance* network);
 NativeAPI void NetworkInstance_ConnectTo(NetworkInstance* network, const char* ip, int port);
 NativeAPI unsigned int NetworkInstance_GetSessionCount(NetworkInstance* network);
 
-NativeAPI void NetworkSession_Bind(NetworkSession* session, OnSessionReceiveCallbackPtr onReceive);
+NativeAPI void NetworkSession_Bind(NetworkSession* session, OnSessionReceiveCallbackPtr onReceive, OnSessionSendCallbackPtr onSend);
 NativeAPI void NetworkSession_Send(NetworkSession* session, const char* data, int length);
 NativeAPI void NetworkSession_Stop(NetworkSession* session);
+NativeAPI void NetworkSession_ConsumeReceiveBuffer(NetworkSession* session, int count);
 
 #ifdef __cplusplus
 }

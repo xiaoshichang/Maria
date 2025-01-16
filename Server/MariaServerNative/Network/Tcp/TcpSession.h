@@ -21,20 +21,17 @@ namespace Maria::Server::Native
         void Stop();
         void OnDisconnect();
 
-    private:
-        void Receive();
+    public:
+        void Send(const char* data, int length) override;
+        void ConsumeReceiveBuffer(int count) override;
 
-    private:
+    protected:
+        void DoSend();
+        void OnSend(boost::system::error_code ec, std::size_t bytes_transferred, int buffer_count) override;
+        void Receive() override;
         void ReadAtLeast(int byteCount);
         void ReadUntilDelim();
-        void OnReceive(boost::system::error_code ec, std::size_t bytes_transferred);
-
-        boost::asio::streambuf& GetBufferToSend();
-        void SwitchBufferToSend();
-        void SendWithHeader(const char* header, int headerSize, const char* body, int bodySize) override;
-        void SendWithDelim(const char* body, int bodySize) override;
-        void DoSend();
-        void OnSend(boost::system::error_code ec, std::size_t bytes_transferred);
+        void OnReceive(boost::system::error_code ec, std::size_t bytes_transferred) override;
 
     public:
         tcp::socket& GetInternalSocket()
@@ -47,10 +44,8 @@ namespace Maria::Server::Native
 
         bool closed_ = false;
         bool sending_ = false;
-        bool use_send_buffer_1_ = true;
-        boost::asio::streambuf send_buffer_1_;
-        boost::asio::streambuf send_buffer_2_;
-
+        boost::asio::streambuf receive_buffer_;
+        std::vector<boost::asio::const_buffer> send_queue_;
         const boost::asio::detail::transfer_all_t WRITE_RULE = boost::asio::transfer_all();
     };
 }

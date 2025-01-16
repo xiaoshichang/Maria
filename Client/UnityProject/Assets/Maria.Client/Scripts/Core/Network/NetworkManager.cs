@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Reflection;
 using Maria.Client.Foundation.Log;
 using Maria.Shared.Network;
 
@@ -5,8 +7,14 @@ namespace Maria.Client.Core.Network
 {
 	public static class NetworkManager
 	{
-		public static void Init()
+		public static void Init(List<string> assemblies)
 		{
+			foreach (var assemblyName in assemblies)
+			{
+				var assembly = Assembly.Load(assemblyName);
+				NetworkSessionMessage.RegisterNetworkSessionMessageType(assembly);
+			}
+			NetworkSessionMessage.RegisterNetworkSessionMessageType(Assembly.GetExecutingAssembly());
 		}
 
 		public static void UnInit()

@@ -15,26 +15,30 @@ namespace Maria.Server.Core.Network
 		{
 			_NativeSession = nativeSession;
 			_OnReceiveMessage = onReceive;
-			NativeAPI.NetworkSession_Bind(nativeSession, OnReceive);
+			NativeAPI.NetworkSession_Bind(nativeSession, OnReceive, OnSend);
 		}
 
 		public void Send(NetworkSessionMessage message)
 		{
-			var memoryStream = NetworkSessionMessageSerializer.SerializeToStream(message);
-			if (memoryStream == null)
+			try
 			{
-				Logger.Error($"unable to serialize message. {message.GetType().Name}");
-				return;
-			}
-
-			unsafe
-			{
-				var data = memoryStream.GetBuffer();
-				fixed (byte* ptr = &data[0])
+				var memoryStream = NetworkSessionMessageSerializer.SerializeToStream(message);
+				unsafe
 				{
-					NativeAPI.NetworkSession_Send(_NativeSession, new IntPtr(ptr), (int)memoryStream.Length);
+					var data = memoryStream.GetBuffer();
+					fixed (byte* ptr = &data[0])
+					{
+						// keep memory available until aysnc send operation finish.
+						_SendQueue.Add(memoryStream);
+						NativeAPI.NetworkSession_Send(_NativeSession, new IntPtr(ptr), (int)memoryStream.Length);
+					}
 				}
 			}
+			catch (Exception e)
+			{
+				Logger.Error(e.ToString());
+			}
+			
 		}
 
 		public void Stop()
@@ -44,21 +48,42 @@ namespace Maria.Server.Core.Network
 
 		private void OnReceive(IntPtr data, int length)
 		{
-			unsafe
+			try
 			{
-				var nativePtr = (byte*)data.ToPointer();
-				var stream = new UnmanagedMemoryStream(nativePtr, length);
-				var message = NetworkSessionMessageSerializer.Deserialize(stream);
-				if (message == null)
+				unsafe
 				{
-					throw new Exception("deserialize message fail.");
+					var nativePtr = (byte*)data.ToPointer();
+					var stream = new UnmanagedMemoryStream(nativePtr, length, length, FileAccess.ReadWrite);
+					var consumeBytes = NetworkSessionMessageSerializer.Deserialize(stream, out var message);
+					if (consumeBytes > 0)
+					{
+						NativeAPI.NetworkSession_ConsumeReceiveBuffer(_NativeSession, consumeBytes);
+					}
+					else if (consumeBytes < 0)
+					{
+						Logger.Error("exception while receiving message.");
+					}
+					if (message != null)
+					{
+						_OnReceiveMessage?.Invoke(this, message);
+					}
 				}
-				_OnReceiveMessage?.Invoke(this, message);
 			}
+			catch (Exception e)
+			{
+				Logger.Error(e.ToString());
+			}
+		}
+
+		private void OnSend(int bufferCount)
+		{
+			// remove from send queue and let gc work.
+			_SendQueue.RemoveRange(0, bufferCount);
 		}
 		
 		
 		private readonly IntPtr _NativeSession;
+		private readonly List<MemoryStream> _SendQueue = new List<MemoryStream>();
 		private readonly NetworkSessionReceiveMessageCallback? _OnReceiveMessage;
 
 	}

@@ -6,11 +6,15 @@ using Maria.Client.Core.UI;
 using Maria.Client.Foundation.Log;
 using Maria.Client.Core.Timer;
 using Maria.Client.Core.GM;
-
 using UnityEngine;
 
 namespace Maria.Client.Application
 {
+	public class messageA
+	{
+		public string Name { get; set; }
+	}
+	
 	public partial class ApplicationRoot : MonoBehaviour
 	{
 		private void Start()
@@ -23,7 +27,7 @@ namespace Maria.Client.Application
 			AssetManager.Init();
 			TimerManager.Init();
 			
-			NetworkManager.Init();
+			NetworkManager.Init(Assemblies);
 			UIManager.Init(Assemblies);
 			GMManager.Init(Assemblies);
 			

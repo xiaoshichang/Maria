@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Maria.Server.NativeInterface
 {
@@ -25,8 +26,8 @@ namespace Maria.Server.NativeInterface
 		public delegate void OnSessionAcceptHandler(IntPtr session);
 		public delegate void OnSessionConnectedHandler(IntPtr session, int ec);
 		public delegate void OnSessionDisconnectHandler(IntPtr session);
-		
 		public delegate void OnSessionReceiveHandler(IntPtr data, int length);
+		public delegate void OnSessionSendHandler(int bufferCount);
 		#endregion
 
 		#region Struct
@@ -57,6 +58,9 @@ namespace Maria.Server.NativeInterface
 
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern void Logger_Init(string path, string fileName);
+		
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void Logger_UnInit();
 	
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern void Logger_Debug(string message);
@@ -110,16 +114,19 @@ namespace Maria.Server.NativeInterface
 		public static extern void NetworkInstance_GetSessionCount(IntPtr network);
 		
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
-		public static extern void NetworkSession_Bind(IntPtr session, OnSessionReceiveHandler onReceive);
+		public static extern void NetworkSession_Bind(IntPtr session, OnSessionReceiveHandler onReceive, OnSessionSendHandler onSend);
 		
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern void NetworkSession_Send(IntPtr session, IntPtr data, int length);
 		
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern void NetworkSession_Stop(IntPtr session);
-		
+
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void NetworkSession_ConsumeReceiveBuffer(IntPtr session, int count);
+
 		#endregion
-		
+
 	}
 }
 

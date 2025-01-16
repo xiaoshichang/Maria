@@ -131,6 +131,7 @@ namespace Maria.Server.Application
 				Server.Run();
 				Server.UnInit();
 				Logger.Info("Server Exit ok...");
+				Logger.UnInit();
 			}
 			catch (Exception e)
 			{
@@ -140,6 +141,7 @@ namespace Maria.Server.Application
 					Logger.Error(e.StackTrace);
 				}
 				Logger.Error("Unhandled exception!\n Exiting......");
+				Logger.UnInit();
 				Environment.Exit(1);
 			}
 		}

@@ -10,6 +10,11 @@ namespace Maria.Server.Log
 			NativeAPI.Logger_Init(target, fileName);
 		}
 
+		public static void UnInit()
+		{
+			NativeAPI.Logger_UnInit();
+		}
+
 		public static void Debug(string format, params object[] args)
 		{
 			NativeAPI.Logger_Debug(string.Format(format, args));

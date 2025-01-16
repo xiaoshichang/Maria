@@ -71,5 +71,7 @@ namespace Maria::Server::Native
     private:
         static src::severity_logger_mt<logging::trivial::severity_level> core_logger_;
         static src::severity_logger_mt<logging::trivial::severity_level> managed_logger_;
+        static boost::shared_ptr<sinks::synchronous_sink<sinks::basic_text_ostream_backend<char>>> console_sink_;
+        static boost::shared_ptr<sinks::synchronous_sink< sinks::text_file_backend>> file_sink_;
     };
 }

@@ -51,5 +51,6 @@ namespace Maria.Shared.Network
 
 		private static readonly Dictionary<int, Type> _Index2Type = new Dictionary<int, Type>();
 		private static readonly Dictionary<Type, int> _Type2Index = new Dictionary<Type, int>();
+		public const int HeaderLength = 8;
 	}
 }

@@ -51,10 +51,10 @@ public partial class GameServer
 		}
 	}
 
-	private void _OnSystemMsgSystemMsgStubInitReq(NetworkSession session, NetworkSessionMessage message)
+	private void _OnSystemMsgStubInitReq(NetworkSession session, NetworkSessionMessage message)
 	{
 		var req = message as SystemMsgStubInitReq;
-		Logger.Info($"_OnSystemMsgSystemMsgStubInitReq {req.StubDistributeTable.Stub2Game.Count}");
+		Logger.Info($"_OnSystemMsgStubInitReq {req.StubDistributeTable.Stub2Game.Count}");
 		
 		_StubDistributeTable = req.StubDistributeTable;
 		foreach (var (tid, game) in req.StubDistributeTable.Stub2Game)
