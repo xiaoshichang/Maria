@@ -118,17 +118,16 @@ void TcpSession::DoSend()
         return;
     }
 
+    auto count = (int)send_queue_.size();
     auto callback = [=, this](boost::system::error_code ec, std::size_t bytes_transferred)
     {
-        OnSend(ec, bytes_transferred, 1);
+        OnSend(ec, bytes_transferred, count);
     };
 
-    auto buffer = send_queue_[0];
-    send_queue_.erase(send_queue_.begin());
     sending_ = true;
 
-    // todo: scatter/gather io
-    boost::asio::async_write(socket_, buffer,  WRITE_RULE, callback);
+    boost::asio::async_write(socket_, send_queue_,  WRITE_RULE, callback);
+    send_queue_.clear();
 }
 
 void TcpSession::OnSend(boost::system::error_code ec, std::size_t bytes_transferred, int buffer_count)

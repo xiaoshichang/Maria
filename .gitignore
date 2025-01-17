@@ -1,3 +1,4 @@
+**/*.pyc
 
 # unity project
 Client/UnityProject/[Ll]ibrary/
