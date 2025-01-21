@@ -30,6 +30,9 @@ namespace Maria.Client.Application
 			NetworkManager.Init(Assemblies);
 			UIManager.Init(Assemblies);
 			GMManager.Init(Assemblies);
+
+			var ret = InteractiveCore.InteractiveCore.Interpret("	");
+			MLogger.Info(ret);
 			
 			_InitGameplay(Assemblies);
 			_EnterGameplay();

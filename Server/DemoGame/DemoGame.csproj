@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Shared\Maria.Shared\Maria.Shared.csproj" />
       <ProjectReference Include="..\MariaServer\Maria.Server.NativeInterface\Maria.Server.NativeInterface.csproj" />
       <ProjectReference Include="..\MariaServer\Maria.Server\Maria.Server.csproj" />
+      <ProjectReference Include="..\MariaServer\Maria.Shared\Maria.Shared.csproj" />
     </ItemGroup>
 
 </Project>
