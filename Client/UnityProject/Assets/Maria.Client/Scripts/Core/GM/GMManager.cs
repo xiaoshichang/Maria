@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Maria.Client.Application;
@@ -26,24 +27,30 @@ namespace Maria.Client.Core.GM
 			_Root = new GameObject("GMManager");
 			_Root.AddComponent<GMTerminal>();
 			
+			var assembliesLoaded = new List<Assembly>();
 			// collect from framework
-			CollectGMCommandsByReflection(Assembly.GetExecutingAssembly());
-
+			assembliesLoaded.Add(Assembly.GetExecutingAssembly());
 			// collect from gameplay
 			foreach (var assemblyName in assemblies)
 			{
 				var assembly = Assembly.Load(assemblyName);
+				assembliesLoaded.Add(assembly);
+			}
+			foreach (var assembly in assembliesLoaded)
+			{
 				CollectGMCommandsByReflection(assembly);
 			}
+
+			_InitInteractiveCore(assembliesLoaded);
 			
 			MLogger.Info($"Init GMManager OK. {_AllGMCommands.Count} commands collected.");
 		}
 		
 		public static void UnInit()
 		{
-			Object.Destroy(_Root);
+			_UnInitInteractiveCore();
 			_AllGMCommands.Clear();
-			
+			Object.Destroy(_Root);
 			MLogger.Info($"UnInit GMManager OK.");
 		}
 		
@@ -142,12 +149,11 @@ namespace Maria.Client.Core.GM
 			MLogger.Warning(sb.ToString());
 		}
 
-		/// <summary>
-		/// 执行GM命令
-		/// </summary>
-		public static bool Execute(string input)
+
+
+		private static bool _ExecuteCommand(string command)
 		{
-			var items = input.Split();
+			var items = command.Split();
 			if (items.Length <= 0)
 			{
 				MLogger.Error("gm input invalid!");
@@ -194,14 +200,67 @@ namespace Maria.Client.Core.GM
 			}
 		}
 
+		private static bool _ExecuteInteractiveCode(string code)
+		{
+			try
+			{
+				_Interpreter(code);
+				return true;
+			}
+			catch (Exception e)
+			{
+				MLogger.Error(e.ToString());
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// 执行GM命令
+		/// </summary>
+		public static bool Execute(string input)
+		{
+			if (input.StartsWith("@"))
+			{
+				input = input.Remove(0, 1);
+				return _ExecuteCommand(input);
+			}
+			else
+			{
+				return _ExecuteInteractiveCode(input);
+			}
+		}
+
 		public static int GetCommandsCount()
 		{
 			return _AllGMCommands.Count;
+		}
+		
+		
+		private static void _InitInteractiveCore(List<Assembly> assemblies)
+		{
+			
+			var ns = new List<string>();
+			ns.Add("Maria.Client.Application");
+
+			assemblies.Add(typeof(MonoBehaviour).Assembly);
+			InteractiveCore.InteractiveCore.Init(assemblies, ns);
+		}
+
+		private static void _UnInitInteractiveCore()
+		{
+			InteractiveCore.InteractiveCore.UnInit();
+		}
+
+		private static void _Interpreter(string code)
+		{
+			InteractiveCore.InteractiveCore.Interpret(code);
 		}
 
 		private static GameObject _Root;
 		private static readonly Dictionary<string, GMCommand> _AllGMCommands = new();
 
 
+		
+		
 	}
 }

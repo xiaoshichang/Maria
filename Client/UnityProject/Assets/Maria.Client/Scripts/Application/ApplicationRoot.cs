@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Maria.Client.Core.Asset;
 using Maria.Client.Core.Coroutine;
 using Maria.Client.Core.Network;
@@ -30,9 +31,6 @@ namespace Maria.Client.Application
 			NetworkManager.Init(Assemblies);
 			UIManager.Init(Assemblies);
 			GMManager.Init(Assemblies);
-
-			var ret = InteractiveCore.InteractiveCore.Interpret("	");
-			MLogger.Info(ret);
 			
 			_InitGameplay(Assemblies);
 			_EnterGameplay();
@@ -58,7 +56,11 @@ namespace Maria.Client.Application
 			CoroutineManager.UnInit();
 		}
 
+		/// <summary>
+		/// Gameplay relative assemblies.
+		/// </summary>
 		public List<string> Assemblies;
+		
 		public static ApplicationRoot Instance;
 	}
 }
