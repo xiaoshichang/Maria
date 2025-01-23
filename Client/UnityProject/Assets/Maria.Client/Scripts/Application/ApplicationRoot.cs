@@ -11,9 +11,10 @@ using UnityEngine;
 
 namespace Maria.Client.Application
 {
-	public class messageA
+	public class MyCompanyClass // should show AB0001 warning.
 	{
-		public string Name { get; set; }
+		
+		
 	}
 	
 	public partial class ApplicationRoot : MonoBehaviour
@@ -34,6 +35,8 @@ namespace Maria.Client.Application
 			
 			_InitGameplay(Assemblies);
 			_EnterGameplay();
+			
+			
 		}
 
 		private void Update()

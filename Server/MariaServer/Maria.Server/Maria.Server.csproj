@@ -10,7 +10,15 @@
     <ItemGroup>
       <ProjectReference Include="..\InteractiveCore\InteractiveCore.csproj" />
       <ProjectReference Include="..\Maria.Server.NativeInterface\Maria.Server.NativeInterface.csproj" />
+      <ProjectReference Include="..\Maria.Shared.Analyzer\Maria.Shared.Analyzer\Maria.Shared.Analyzer.csproj" />
       <ProjectReference Include="..\Maria.Shared\Maria.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Maria.Shared.Analyzer\Maria.Shared.Analyzer\Maria.Shared.Analyzer.csproj">
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+            <OutputItemType>Analyzer</OutputItemType>
+        </ProjectReference>
     </ItemGroup>
 
 </Project>
