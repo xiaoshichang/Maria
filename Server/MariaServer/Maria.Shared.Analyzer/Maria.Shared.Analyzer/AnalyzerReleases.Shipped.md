@@ -4,5 +4,5 @@
 
 Rule ID | Category | Severity | Notes
 ---------|----------|----------|--------------------------------------------------
- AB0001  | Naming   | Warning  | Type names should not contain the company name.  
- AB0002  | Usage    | Warning  | The speed must be lower than the Speed of Light. 
+ MAR00001  | Naming   | Warning  | Private member function should starts with underscore followed by Upper case alphabet.  
+ MAR00002  | Naming   | Warning  | Public member function should starts with Upper case alphabet. 

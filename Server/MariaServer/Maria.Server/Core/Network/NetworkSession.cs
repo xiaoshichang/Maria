@@ -15,7 +15,7 @@ namespace Maria.Server.Core.Network
 		{
 			_NativeSession = nativeSession;
 			_OnReceiveMessage = onReceive;
-			NativeAPI.NetworkSession_Bind(nativeSession, OnReceive, OnSend);
+			NativeAPI.NetworkSession_Bind(nativeSession, _OnReceive, _OnSend);
 		}
 
 		public void Send(NetworkSessionMessage message)
@@ -46,7 +46,7 @@ namespace Maria.Server.Core.Network
 			NativeAPI.NetworkSession_Stop(_NativeSession);
 		}
 
-		private void OnReceive(IntPtr data, int length)
+		private void _OnReceive(IntPtr data, int length)
 		{
 			try
 			{
@@ -75,7 +75,7 @@ namespace Maria.Server.Core.Network
 			}
 		}
 
-		private void OnSend(int bufferCount)
+		private void _OnSend(int bufferCount)
 		{
 			// remove from send queue and let gc work.
 			_SendQueue.RemoveRange(0, bufferCount);
