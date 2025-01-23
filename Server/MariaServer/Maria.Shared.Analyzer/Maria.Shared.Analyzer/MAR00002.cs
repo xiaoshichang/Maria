@@ -21,7 +21,7 @@ public class MAR00002Analyzer : DiagnosticAnalyzer
 	
 	private const string Title = "Public member function naming";
 
-	private const string MessageFormat = "Public member function should starts Upper case alphabet. {0}.";
+	private const string MessageFormat = "Public member function should starts uppercase alphabet. {0}.";
 
 	private static readonly DiagnosticDescriptor Rule = new(DiagnosticId, 
 		Title, 

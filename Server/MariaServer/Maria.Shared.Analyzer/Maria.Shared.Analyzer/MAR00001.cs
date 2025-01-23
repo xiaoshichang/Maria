@@ -21,7 +21,7 @@ public class MAR00001Analyzer : DiagnosticAnalyzer
 	
 	private const string Title = "Private member function naming";
 
-	private const string MessageFormat = "Private member function should starts with underscore followed by Upper case alphabet. {0}.";
+	private const string MessageFormat = "Private member function should starts with underscore followed by uppercase alphabet. {0}.";
 
 	private static readonly DiagnosticDescriptor Rule = new(DiagnosticId, 
 		Title, 
@@ -76,28 +76,30 @@ public class MAR00001Analyzer : DiagnosticAnalyzer
 		}
 
 		var methodName = methodDeclarationNode.Identifier.Text;
-		if (methodName.StartsWith("_"))
+		if (!methodName.StartsWith("_"))
 		{
-			return;
-		}
+			var diagnostic = Diagnostic.Create(Rule,
+				// The highlighted area in the analyzed source code. Keep it as specific as possible.
+				methodDeclarationNode.Identifier.GetLocation(),
+				// The value is passed to 'MessageFormat' argument of your 'Rule'.
+				methodDeclarationNode.Identifier.Text
+			);
 
-		if (methodName.Length >= 2)
-		{
-			if (Char.IsUpper(methodName[1]))
-			{
-				return;
-			}
+			// Reporting a diagnostic is the primary outcome of the analyzer.
+			context.ReportDiagnostic(diagnostic);
 		}
 		
-		var diagnostic = Diagnostic.Create(Rule,
-			// The highlighted area in the analyzed source code. Keep it as specific as possible.
-			methodDeclarationNode.Identifier.GetLocation(),
-			// The value is passed to 'MessageFormat' argument of your 'Rule'.
-			methodDeclarationNode.Identifier.Text
-		);
+		if (methodName.Length >= 2 && !Char.IsUpper(methodName[1]))
+		{
+			var diagnostic = Diagnostic.Create(Rule,
+				// The highlighted area in the analyzed source code. Keep it as specific as possible.
+				methodDeclarationNode.Identifier.GetLocation(),
+				// The value is passed to 'MessageFormat' argument of your 'Rule'.
+				methodDeclarationNode.Identifier.Text
+			);
 
-		// Reporting a diagnostic is the primary outcome of the analyzer.
-		context.ReportDiagnostic(diagnostic);
-
+			// Reporting a diagnostic is the primary outcome of the analyzer.
+			context.ReportDiagnostic(diagnostic);
+		}
 	}
 }
