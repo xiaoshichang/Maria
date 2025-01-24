@@ -20,6 +20,7 @@ namespace Maria.Server.Core.Network
 			NetworkSessionDisconnectedCallback? onDisconnected,
 			NetworkSessionReceiveMessageCallback? onReceiveMessage)
 		{
+			_InitInfo = initInfo;
 			_NativeNetworkInstance = NativeAPI.NetworkInstance_Init(initInfo, OnSessionAcceptedHandler, OnSessionConnectedHandler, OnSessionDisconnectedHandler);
 			_OnNetworkSessionAccepted = onAccepted;
 			_OnNetworkSessionConnected = onConnected;
@@ -53,7 +54,7 @@ namespace Maria.Server.Core.Network
 		private void OnSessionAcceptedHandler(IntPtr nativeSessionPtr)
 		{
 			Logger.Assert(!_Sessions.ContainsKey(nativeSessionPtr), $"OnSessionAcceptHandler Duplicated Session. {nativeSessionPtr}");
-			var session = new NetworkSession(nativeSessionPtr, _OnNetworkSessionReceiveMessage);
+			var session = new NetworkSession(_InitInfo.SessionEncoderType, nativeSessionPtr, _OnNetworkSessionReceiveMessage);
 			_Sessions[nativeSessionPtr] = session;
 			_OnNetworkSessionAccepted?.Invoke(session);
 		}
@@ -61,7 +62,7 @@ namespace Maria.Server.Core.Network
 		private void OnSessionConnectedHandler(IntPtr nativeSessionPtr, int ec)
 		{
 			Logger.Assert(!_Sessions.ContainsKey(nativeSessionPtr), $"OnSessionConnectedHandler Duplicated Session. {nativeSessionPtr}");
-			var session = new NetworkSession(nativeSessionPtr, _OnNetworkSessionReceiveMessage);
+			var session = new NetworkSession(_InitInfo.SessionEncoderType, nativeSessionPtr, _OnNetworkSessionReceiveMessage);
 			_Sessions[nativeSessionPtr] = session;
 			_OnNetworkSessionConnected?.Invoke(session);
 		}
@@ -77,6 +78,7 @@ namespace Maria.Server.Core.Network
 		}
 		
 		private IntPtr _NativeNetworkInstance = IntPtr.Zero;
+		private NativeAPI.NetworkInitInfo _InitInfo;
 		private readonly Dictionary<IntPtr, NetworkSession> _Sessions = new();
 		
 		private NetworkSessionAcceptedCallback? _OnNetworkSessionAccepted;

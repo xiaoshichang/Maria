@@ -12,7 +12,11 @@ namespace Maria::Server::Native
         Kcp = 2,
     };
 
-
+    enum SessionMessageEncoderType : int
+    {
+        Header = 1,
+        Delim = 2,
+    };
 
     struct NetworkInitInfo
     {

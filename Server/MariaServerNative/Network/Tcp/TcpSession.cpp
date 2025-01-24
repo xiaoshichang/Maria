@@ -26,20 +26,12 @@ void TcpSession::Stop()
 
 void TcpSession::Receive()
 {
-    auto& networkInfo = network_->GetNetworkInfo();
-    if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Header)
+    auto read_rule = boost::asio::detail::transfer_at_least_t(1);
+    auto callback = [this](boost::system::error_code ec, std::size_t bytes_transferred)
     {
-        ReadAtLeast(1);
-    }
-    else if (networkInfo.SessionEncoderType == SessionMessageEncoderType::Delim)
-    {
-        ReadUntilDelim();
-    }
-    else
-    {
-        Logger::Error("unsupported session encoder type.");
-        throw;
-    }
+        OnReceive(ec, bytes_transferred);
+    };
+    boost::asio::async_read(socket_, receive_buffer_, read_rule, callback);
 }
 
 
@@ -53,27 +45,6 @@ void TcpSession::OnDisconnect()
     socket_.close();
 
     dynamic_cast<TcpNetworkInstance*>(network_)->OnDisconnect(this);
-}
-
-
-
-void TcpSession::ReadAtLeast(int byteCount)
-{
-    auto read_rule = boost::asio::detail::transfer_at_least_t(byteCount);
-    auto callback = [this](boost::system::error_code ec, std::size_t bytes_transferred)
-    {
-        OnReceive(ec, bytes_transferred);
-    };
-    boost::asio::async_read(socket_, receive_buffer_, read_rule, callback);
-}
-
-void TcpSession::ReadUntilDelim()
-{
-    auto callback = [this](boost::system::error_code ec, std::size_t bytes_transferred)
-    {
-        OnReceive(ec, bytes_transferred);
-    };
-    boost::asio::async_read_until(socket_, receive_buffer_, "\n", callback);
 }
 
 void TcpSession::OnReceive(boost::system::error_code ec, std::size_t bytes_transferred)

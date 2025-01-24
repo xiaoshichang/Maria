@@ -29,8 +29,6 @@ namespace Maria::Server::Native
         void DoSend();
         void OnSend(boost::system::error_code ec, std::size_t bytes_transferred, int buffer_count) override;
         void Receive() override;
-        void ReadAtLeast(int byteCount);
-        void ReadUntilDelim();
         void OnReceive(boost::system::error_code ec, std::size_t bytes_transferred) override;
 
     public:

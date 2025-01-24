@@ -9,12 +9,6 @@ namespace Maria::Server::Native
     class NetworkSession;
     class NetworkInstance;
 
-    enum SessionMessageEncoderType : int
-    {
-        Header = 1,
-        Delim = 2,
-    };
-
     typedef void (*OnSessionAcceptCallbackPtr)(NetworkSession* session);
     typedef void (*OnSessionConnectedCallbackPtr)(NetworkSession* session, const int ec);
     typedef void (*OnSessionDisconnectCallbackPtr)(NetworkSession* session);

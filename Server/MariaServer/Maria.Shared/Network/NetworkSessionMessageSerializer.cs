@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Maria.Shared.Network
@@ -66,7 +67,7 @@ namespace Maria.Shared.Network
 				return 0; // not enough data to parse header
 			}
 
-			var streamReader = new StreamReader(stream);
+			var streamReader = new StreamReader(stream, Encoding.UTF8);
 			var buffer = new byte[NetworkSessionMessage.HeaderLength];
 			
 			// read message length

@@ -56,6 +56,7 @@ void TcpNetworkInstance::Accept()
         }
         sessions_.insert(session);
         on_accept_callback_(session);
+        // todo: supports disconnect operation in on_accept_callback_
         session->Start();
         Accept();
     };
