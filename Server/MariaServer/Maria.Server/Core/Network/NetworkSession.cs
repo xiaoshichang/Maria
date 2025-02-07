@@ -21,27 +21,68 @@ namespace Maria.Server.Core.Network
 			NativeAPI.NetworkSession_Bind(nativeSession, _OnReceive, _OnSend);
 		}
 
+		private void _SendHeaderMessage(NetworkSessionMessage message)
+		{
+			var memoryStream = NetworkSessionMessageSerializer.SerializeToStream(message);
+			unsafe
+			{
+				var data = memoryStream.GetBuffer();
+				fixed (byte* ptr = &data[0])
+				{
+					// keep memory available until aysnc send operation finish.
+					_SendQueue.Add(memoryStream);
+					NativeAPI.NetworkSession_Send(_NativeSession, new IntPtr(ptr), (int)memoryStream.Length);
+				}
+			}
+		}
+
+		private void _SendDelimMessage(NetworkSessionMessage message)
+		{
+			
+			var telnetMessage = message as TelnetNetworkSessionMessage;
+			if (telnetMessage == null || telnetMessage.Data == null)
+			{
+				Logger.Error("unknown error.");
+				return;
+			}
+			unsafe
+			{
+				// if message contains delim, replace to newline.
+				var processed = telnetMessage.Data.Replace(NativeAPI.Delimiter, "\n");
+				// finally, append delim to the end of message and send out.
+				var dataToSend = Encoding.ASCII.GetBytes(processed + NativeAPI.Delimiter);
+				fixed (byte* ptr = dataToSend)
+				{
+					// hold dataToSend to avoid gc before async send operation finish.
+					_SendQueue.Add(dataToSend);
+					// do send operation
+					NativeAPI.NetworkSession_Send(_NativeSession, new IntPtr(ptr), dataToSend.Length);
+				}
+			}
+			
+		}
+		
 		public void Send(NetworkSessionMessage message)
 		{
 			try
 			{
-				var memoryStream = NetworkSessionMessageSerializer.SerializeToStream(message);
-				unsafe
+				if (_EncoderType == NativeAPI.SessionMessageEncoderType.Header)
 				{
-					var data = memoryStream.GetBuffer();
-					fixed (byte* ptr = &data[0])
-					{
-						// keep memory available until aysnc send operation finish.
-						_SendQueue.Add(memoryStream);
-						NativeAPI.NetworkSession_Send(_NativeSession, new IntPtr(ptr), (int)memoryStream.Length);
-					}
+					_SendHeaderMessage(message);
+				}
+				else if (_EncoderType == NativeAPI.SessionMessageEncoderType.Delim)
+				{
+					_SendDelimMessage(message);
+				}
+				else
+				{
+					throw new NotImplementedException();
 				}
 			}
 			catch (Exception e)
 			{
 				Logger.Error(e.ToString());
 			}
-			
 		}
 
 		public void Stop()
@@ -84,7 +125,7 @@ namespace Maria.Server.Core.Network
 					return;
 				}
 
-				var commands = contents.Split("\n");
+				var commands = contents.Split(NativeAPI.Delimiter);
 				if (commands.Length <= 1)
 				{
 					return;
@@ -94,10 +135,10 @@ namespace Maria.Server.Core.Network
 				for (int i = 0; i < commands.Length - 1; i++)	// contents split into n parts means n-1 commands
 				{
 					var command = commands[i];
-					consumeBytes += command.Length + 1;
+					consumeBytes += command.Length + NativeAPI.Delimiter.Length;
 					var message = new TelnetNetworkSessionMessage()
 					{
-						Command = command
+						Data = command
 					};
 					_OnReceiveMessage?.Invoke(this, message);
 				}
@@ -140,7 +181,7 @@ namespace Maria.Server.Core.Network
 		
 		private readonly IntPtr _NativeSession;
 		private readonly NativeAPI.SessionMessageEncoderType _EncoderType;
-		private readonly List<MemoryStream> _SendQueue = new List<MemoryStream>();
+		private readonly List<object> _SendQueue = new List<object>();
 		private readonly NetworkSessionReceiveMessageCallback? _OnReceiveMessage;
 
 	}

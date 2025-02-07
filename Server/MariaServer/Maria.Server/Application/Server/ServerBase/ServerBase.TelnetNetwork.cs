@@ -7,7 +7,7 @@ namespace Maria.Server.Application.Server.ServerBase;
 
 public class TelnetNetworkSessionMessage : NetworkSessionMessage
 {
-	public string? Command;
+	public string? Data;
 }
 
 public abstract partial class ServerBase
@@ -27,6 +27,15 @@ public abstract partial class ServerBase
 	
 	private void _OnTelnetSessionAccepted(NetworkSession session)
 	{
+		var welcome =
+			"========================================\n" +
+			"Welcome to maria server debug back door!\n" +
+			"========================================\n";
+		var message = new TelnetNetworkSessionMessage()
+		{
+			Data = welcome
+		};
+		session.Send(message);
 	}
 
 	private void _OnTelnetSessionDisconnected(NetworkSession session)

@@ -44,6 +44,8 @@ namespace Maria.Server.NativeInterface
 			Delim = 2,
 		}
 
+		public const string Delimiter = "\r\n";
+
 		[StructLayout(LayoutKind.Sequential, CharSet = _CharSet)]
 		public struct NetworkInitInfo
 		{
