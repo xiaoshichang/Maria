@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using Maria.Server.Application.Server.GameServer;
 using Maria.Server.Application.Server.GateServer;
 using Maria.Server.Application.Server.GMServer;
@@ -119,6 +121,10 @@ namespace Maria.Server.Application
 		{
 			try
 			{
+				// force exception message to en-us
+				Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+				Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+				
 				_SetNativeDllSearchPath();
 				_LoadConfig();
 				_InitLogger();

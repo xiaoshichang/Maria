@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Globalization;
+using System.Reflection;
 
 namespace Interactive
 {
@@ -41,7 +42,8 @@ namespace Interactive
     	{
 		    try
 		    {
-			    InteractiveCore.InteractiveCore.Interpret(input);
+			    var ret = InteractiveCore.InteractiveCore.Interpret(input);
+			    Console.Out.WriteLine($"out: {ret}");
 		    }
 		    catch (Exception e)
 		    {

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CodeAnalysis.Scripting.Hosting;
 
 namespace InteractiveCore
 {
@@ -30,9 +28,17 @@ namespace InteractiveCore
 			_State = null;
 		}
 
-		public static void Interpret(string code)
+		public static string Interpret(string code)
 		{
 			_State = _State.ContinueWithAsync(code).Result;
+			if (_State.ReturnValue != null)
+			{
+				return _State.ReturnValue.ToString();
+			}
+			else
+			{
+				return string.Empty;
+			}
 		}
 
 		private static ScriptState<object> _State;
