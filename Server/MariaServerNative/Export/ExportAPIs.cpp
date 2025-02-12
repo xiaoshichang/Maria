@@ -90,14 +90,14 @@ void NetworkInstance_UnInit(NetworkInstance* network)
     delete network;
 }
 
-void NetworkInstance_StartListen(NetworkInstance* network, const char* ip, int port)
+void NetworkInstance_Start(NetworkInstance* network, const char* ip, int port)
 {
-    network->StartListen(ip, port);
+    network->Start(ip, port);
 }
 
-void NetworkInstance_StopListen(NetworkInstance* network)
+void NetworkInstance_Stop(NetworkInstance* network)
 {
-    network->StopListen();
+    network->Stop();
 }
 
 void NetworkInstance_ConnectTo(NetworkInstance* network, const char* ip, int port)

@@ -22,6 +22,7 @@ namespace Maria.Server.Application.Server.GameServer
 			base._RegisterNetworkSessionMessageHandlers();
 			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgGameConnectToGateNtf>(_OnSystemMsgGameConnectToGate);
 			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgStubInitReq>(_OnSystemMsgStubInitReq);
+			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgCloseGateReq>(_OnSystemMsgSaveEntitiesReq);
 		}
 
 

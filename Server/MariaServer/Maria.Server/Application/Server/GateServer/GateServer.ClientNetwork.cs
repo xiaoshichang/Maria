@@ -36,7 +36,12 @@ public partial class GateServer
 			Logger.Error("_OpenClientNetwork unknown error.");
 			return;
 		}
-		_ClientNetwork.StartListen(gateConfig.OuterIp, gateConfig.OuterPort);
+		_ClientNetwork.Start(gateConfig.OuterIp, gateConfig.OuterPort);
+	}
+
+	private void _CloseClientNetwork()
+	{
+		_ClientNetwork.Stop();
 	}
 
 	private void _OnClientSessionAccepted(NetworkSession session)

@@ -13,22 +13,27 @@ public class TelnetNetworkSessionMessage : NetworkSessionMessage
 	public string? Data;
 }
 
+public static class TelnetCommand
+{
+	public const string STAT = "stat";
+	public const string SHUTDOWN = "shutdown";
+}
+
 public abstract partial class ServerBase
 {
 	private void _InitTelnetNetwork()
 	{
-		Logger.Info("InitTelnetNetwork...");
 		var initInfo = new NativeAPI.NetworkInitInfo()
 		{
 			ConnectionType = NativeAPI.NetworkConnectionType.Tcp,
 			SessionEncoderType = NativeAPI.SessionMessageEncoderType.Delim
 		};
 		_TelnetNetwork.Init(initInfo, _OnTelnetSessionAccepted, null, _OnTelnetSessionDisconnected, _OnTelnetSessionReceiveMessage);
-		_TelnetNetwork.StartListen("127.0.0.1", Program.ServerConfig.TelnetPort);
-		
+		_TelnetNetwork.Start("127.0.0.1", Program.ServerConfig.TelnetPort);
+		Logger.Info($"InitTelnetNetwork {initInfo.ConnectionType} {initInfo.SessionEncoderType} ...");
 	}
 
-	private void _SendTelnetMessage(NetworkSession session, string data)
+	protected void _SendTelnetMessage(NetworkSession session, string data)
 	{
 		var message = new TelnetNetworkSessionMessage()
 		{
@@ -51,6 +56,36 @@ public abstract partial class ServerBase
 	{
 	}
 
+	private string _CollectProcessPerformanceStat()
+	{
+		var info = $"cpu:{GetProcessCpuUsage01()}\n";
+		info += $"memory:{GetProcessMemoryUsageMB()}\n";
+		return info;
+	}
+	
+	protected virtual void _OnTelnetSessionReceiveSpecialCommand(NetworkSession session, string code)
+	{
+		if (code == TelnetCommand.STAT)
+		{
+			var stat = _CollectProcessPerformanceStat();
+			_SendTelnetMessage(session, stat);
+		}
+	}
+	
+	private void _OnTelnetSessionReceiveDebugCode(NetworkSession session, string code)
+	{
+		try
+		{
+			var ret = InteractiveCore.InteractiveCore.Interpret(code);
+			_SendTelnetMessage(session, ret);
+		}
+		catch (Exception e)
+		{
+			_SendTelnetMessage(session, e.ToString());
+		}
+	}
+	
+	
 	private void _OnTelnetSessionReceiveMessage(NetworkSession session, NetworkSessionMessage req)
 	{
 		var tnsm = req as TelnetNetworkSessionMessage;
@@ -60,17 +95,16 @@ public abstract partial class ServerBase
 			return;
 		}
 		
-		var code = tnsm.Data.Trim();
-		try
+		var data = tnsm.Data.Trim();
+		var prefix = "$";
+		if (data.StartsWith(prefix))
 		{
-			var ret = InteractiveCore.InteractiveCore.Interpret(code);
-			Logger.Info(ret);
-			_SendTelnetMessage(session, ret);
+			var cmd = data.Replace(prefix, "");
+			_OnTelnetSessionReceiveSpecialCommand(session, cmd);
 		}
-		catch (Exception e)
+		else
 		{
-			Logger.Error(e.ToString());
-			_SendTelnetMessage(session, e.ToString());
+			_OnTelnetSessionReceiveDebugCode(session, data);
 		}
 	}
 

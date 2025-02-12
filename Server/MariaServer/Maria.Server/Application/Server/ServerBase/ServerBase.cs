@@ -12,7 +12,7 @@ namespace Maria.Server.Application.Server.ServerBase
 			_InitEntityManager();
 			NativeAPI.IOContext_Init();
 			_InitTelnetNetwork();
-			_InitGroupNetwork();
+			_InitInnerNetwork();
 		}
 
 		public void Run()
@@ -22,7 +22,7 @@ namespace Maria.Server.Application.Server.ServerBase
 
 		public virtual void UnInit()
 		{
-			_UnInitGroupNetwork();
+			_UnInitInnerNetwork();
 			_UnInitTelnetNetwork();
 			NativeAPI.IOContext_UnInit();
 			_UnInitEntityManager();

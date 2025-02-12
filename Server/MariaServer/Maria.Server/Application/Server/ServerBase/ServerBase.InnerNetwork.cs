@@ -29,9 +29,8 @@ public abstract partial class ServerBase
 		NetworkMessageHandlers.RegisterNetworkMessageHandler<InnerNodeHandShakeRsp>(_OnInnerSessionHandShakeRsp);
 	}
 	
-	private void _InitGroupNetwork()
+	private void _InitInnerNetwork()
 	{
-		Logger.Info("InitGroupNetwork...");
 		_RegisterNetworkSessionMessagesByReflection();
 		_RegisterNetworkSessionMessageHandlers();
 		
@@ -41,10 +40,11 @@ public abstract partial class ServerBase
 			SessionEncoderType = NativeAPI.SessionMessageEncoderType.Header
 		};
 		_InnerNetwork.Init(initInfo, _OnInnerSessionAccepted, _OnInnerSessionConnected, _OnInnerSessionDisconnected, _OnInnerSessionReceiveMessage);
-		_InnerNetwork.StartListen(Program.ServerConfig.InnerIp, Program.ServerConfig.InnerPort);
+		_InnerNetwork.Start(Program.ServerConfig.InnerIp, Program.ServerConfig.InnerPort);
+		Logger.Info($"_InitInnerNetwork {initInfo.ConnectionType}...");
 	}
 
-	private void _UnInitGroupNetwork()
+	private void _UnInitInnerNetwork()
 	{
 		_InnerNetwork.UnInit();
 	}

@@ -12,5 +12,14 @@ public class ServerEntity : Shared.Entity.Entity
 	{
 	}
 	
+	public override void OnCreate()
+	{
+		base.OnCreate();
+	}
+
+	public override void OnDestroy()
+	{
+		base.OnDestroy();
+	}
 	
 }

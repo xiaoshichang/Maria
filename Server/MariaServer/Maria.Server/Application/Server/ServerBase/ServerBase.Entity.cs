@@ -17,10 +17,18 @@ public abstract partial class ServerBase
 	
 	private void _UnInitEntityManager()
 	{
+		_CheckAllEntitiesDestroy();
 		_EntityManager.UnInit();
 	}
-	
-	
+
+	private void _CheckAllEntitiesDestroy()
+	{
+		var count = _EntityManager.GetAllServerEntitiesCount();
+		if (count > 0)
+		{
+			Logger.Error("all entities should be destroy before UnInit EntityManager.");
+		}
+	}
 	
 	protected readonly EntityManager _EntityManager = new();
 

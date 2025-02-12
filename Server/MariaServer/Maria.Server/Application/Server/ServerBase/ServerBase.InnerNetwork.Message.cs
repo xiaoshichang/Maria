@@ -45,3 +45,23 @@ public class SystemMsgOpenGateNtf : NetworkSessionMessage
 {
 	
 }
+
+public class SystemMsgCloseGateReq : NetworkSessionMessage
+{
+	
+}
+
+public class SystemMsgCloseGateRsp : NetworkSessionMessage
+{
+	
+}
+
+public class SystemMsgSaveEntitiesReq : NetworkSessionMessage
+{
+	
+}
+
+public class SystemMsgSaveEntitiesRsp : NetworkSessionMessage
+{
+	
+}

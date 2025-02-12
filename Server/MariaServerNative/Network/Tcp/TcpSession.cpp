@@ -22,6 +22,7 @@ void TcpSession::Start()
 
 void TcpSession::Stop()
 {
+    OnDisconnect();
 }
 
 void TcpSession::Receive()

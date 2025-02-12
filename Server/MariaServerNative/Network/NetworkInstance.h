@@ -35,8 +35,8 @@ namespace Maria::Server::Native
                                  OnSessionDisconnectCallbackPtr onDisconnect);
         virtual ~NetworkInstance();
 
-        virtual void StartListen(const char* ip, int port) = 0;
-        virtual void StopListen() = 0;
+        virtual void Start(const char* ip, int port) = 0;
+        virtual void Stop() = 0;
         virtual void ConnectTo(const char* ip, int port) = 0;
         virtual unsigned int GetSessionCount() = 0;
 

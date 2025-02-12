@@ -21,7 +21,7 @@ TcpNetworkInstance::~TcpNetworkInstance()
 
 }
 
-void TcpNetworkInstance::StartListen(const char *ip, int port)
+void TcpNetworkInstance::Start(const char *ip, int port)
 {
     Logger::Info(std::format("StartListen at:{}:{}", ip, port));
     auto address = boost::asio::ip::address_v4::from_string(ip);
@@ -30,11 +30,25 @@ void TcpNetworkInstance::StartListen(const char *ip, int port)
     Accept();
 }
 
-void TcpNetworkInstance::StopListen()
+void TcpNetworkInstance::Stop()
 {
+    if (acceptor_ == nullptr)
+    {
+        return;
+    }
+
+    // stop accept new session
     acceptor_->cancel();
     delete acceptor_;
     acceptor_ = nullptr;
+
+    // and disconnect all exist sessions
+    std::set<TcpSession*> all = sessions_;
+    for (auto session : all)
+    {
+        session->Stop();
+    }
+    Logger::Info(std::format("Closing network instance, {} sessions closed.", all.size()));
 }
 
 void TcpNetworkInstance::Accept()

@@ -20,6 +20,8 @@ namespace Maria.Server.Application.Server.GMServer
 			base._RegisterNetworkSessionMessageHandlers();
 			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgGameReadyNtf>(_OnSystemMsgGameReady);
 			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgStubInitRsp>(_OnSystemMsgStubInitRsp);
+			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgCloseGateRsp>(_OnSystemMsgCloseGateRsp);
+			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgSaveEntitiesRsp>(_OnSystemMsgSaveEntitiesRsp);
 		}
 	}
 }

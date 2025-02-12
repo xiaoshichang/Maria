@@ -16,8 +16,8 @@ namespace Maria::Server::Native
         ~TcpNetworkInstance() override;
 
     public:
-        void StartListen(const char* ip, int port) override;
-        void StopListen() override;
+        void Start(const char* ip, int port) override;
+        void Stop() override;
         void ConnectTo(const char* ip, int port) override;
         unsigned int GetSessionCount() override;
         void OnDisconnect(TcpSession* session);

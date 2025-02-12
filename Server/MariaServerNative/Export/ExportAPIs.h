@@ -40,8 +40,8 @@ NativeAPI NetworkInstance* NetworkInstance_Init(NetworkInitInfo info,
                                                 OnSessionConnectedCallbackPtr onConnected,
                                                 OnSessionDisconnectCallbackPtr onDisconnect);
 NativeAPI void NetworkInstance_UnInit(NetworkInstance* network);
-NativeAPI void NetworkInstance_StartListen(NetworkInstance* network, const char* ip, int port);
-NativeAPI void NetworkInstance_StopListen(NetworkInstance* network);
+NativeAPI void NetworkInstance_Start(NetworkInstance* network, const char* ip, int port);
+NativeAPI void NetworkInstance_Stop(NetworkInstance* network);
 NativeAPI void NetworkInstance_ConnectTo(NetworkInstance* network, const char* ip, int port);
 NativeAPI unsigned int NetworkInstance_GetSessionCount(NetworkInstance* network);
 

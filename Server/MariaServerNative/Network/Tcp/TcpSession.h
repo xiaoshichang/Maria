@@ -17,11 +17,12 @@ namespace Maria::Server::Native
         ~TcpSession() override;
 
     public:
-        void Start();
-        void Stop();
+
         void OnDisconnect();
 
     public:
+        void Start() override;
+        void Stop() override;
         void Send(const char* data, int length) override;
         void ConsumeReceiveBuffer(int count) override;
 

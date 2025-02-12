@@ -22,6 +22,8 @@ namespace Maria::Server::Native
         virtual ~NetworkSession() = default;
 
     public:
+        virtual void Start() = 0;
+        virtual void Stop() = 0;
         virtual void Send(const char* data, int length) = 0;
         virtual void ConsumeReceiveBuffer(int count) = 0;
     protected:

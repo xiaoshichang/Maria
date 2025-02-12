@@ -16,7 +16,8 @@ namespace Maria.Server.Core.Entity
 
 		public void UnInit()
 		{
-			
+			_AllServerEntityTypes.Clear();
+			_AllServerStubTypes.Clear();
 		}
 		
 		private void _CollectServerStubTypes()
@@ -40,16 +41,46 @@ namespace Maria.Server.Core.Entity
 			}
 		}
 		
-		public void CreateServerEntity(Type type, params object?[]? objects)
+		public object? CreateServerEntity(Type type, params object?[]? objects)
 		{
+			var typeid = StableHash.TypeToHash(type);
+			if (!_AllServerEntityTypes.ContainsKey(typeid))
+			{
+				Logger.Error($"CreateServerEntity. type error. {type.Name}");
+				return null;
+			}
+			
 			var entity = Activator.CreateInstance(type, objects) as ServerEntity;
 			if (entity == null)
 			{
-				Logger.Error($"CreateServerEntity. type error. {type.Name}");
-				throw new Exception();
+				Logger.Error($"CreateServerEntity. CreateInstance fail. {type.Name}");
+				return null;
 			}
 			_AllServerEntities[entity.Guid] = entity;
 			entity.OnCreate();
+			return entity;
+		}
+
+		public T? CreateServerEntity<T>(Type type, params object?[]? objects) where T : class
+		{
+			var typeid = StableHash.TypeToHash(type);
+			if (!_AllServerEntityTypes.ContainsKey(typeid))
+			{
+				Logger.Error($"CreateServerEntity. type error. {type.Name}");
+				return null;
+			}
+			
+			var entity = Activator.CreateInstance(type, objects) as ServerEntity;
+			if (entity == null)
+			{
+				Logger.Error($"CreateServerEntity. CreateInstance fail. {type.Name}");
+				return null;
+			}
+			_AllServerEntities[entity.Guid] = entity;
+			entity.OnCreate();
+
+			var r = entity as T;
+			return r;
 		}
 
 		public void DestroyServerEntity(ServerEntity entity)
@@ -73,6 +104,11 @@ namespace Maria.Server.Core.Entity
 			return null;
 		}
 
+		public int GetAllServerEntitiesCount()
+		{
+			return _AllServerEntities.Count;
+		}
+		
 		public ImmutableDictionary<int, Type> GetAllStubTypes()
 		{
 			return _AllServerStubTypes.ToImmutableDictionary();

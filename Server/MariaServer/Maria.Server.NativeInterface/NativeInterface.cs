@@ -104,10 +104,10 @@ namespace Maria.Server.NativeInterface
 		public static extern void NetworkInstance_UnInit(IntPtr network);
 
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
-		public static extern void NetworkInstance_StartListen(IntPtr network, string ip, int port);
+		public static extern void NetworkInstance_Start(IntPtr network, string ip, int port);
 		
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
-		public static extern void NetworkInstance_StopListen(IntPtr network);
+		public static extern void NetworkInstance_Stop(IntPtr network);
 
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern void NetworkInstance_ConnectTo(IntPtr network, string ip, int port);

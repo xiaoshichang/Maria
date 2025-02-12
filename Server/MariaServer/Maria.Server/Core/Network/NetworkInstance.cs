@@ -34,16 +34,16 @@ namespace Maria.Server.Core.Network
 			NativeAPI.NetworkInstance_UnInit(_NativeNetworkInstance);
 		}
 
-		public void StartListen(string ip, int port)
+		public void Start(string ip, int port)
 		{
 			Logger.Assert(_NativeNetworkInstance != IntPtr.Zero, "_NativeNetworkInstance should not be null");
-			NativeAPI.NetworkInstance_StartListen(_NativeNetworkInstance, ip, port);
+			NativeAPI.NetworkInstance_Start(_NativeNetworkInstance, ip, port);
 		}
 
-		public void StopListen()
+		public void Stop()
 		{
 			Logger.Assert(_NativeNetworkInstance != IntPtr.Zero, "_NativeNetworkInstance should not be null");
-			NativeAPI.NetworkInstance_StopListen(_NativeNetworkInstance);
+			NativeAPI.NetworkInstance_Stop(_NativeNetworkInstance);
 		}
 
 		public void ConnectTo(string ip, int port)
