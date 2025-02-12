@@ -26,6 +26,8 @@ NativeAPI void Logger_Info(const char* message);
 NativeAPI void Logger_Warning(const char* message);
 NativeAPI void Logger_Error(const char* message);
 
+NativeAPI void TimerMgr_Init();
+NativeAPI void TimerMgr_UnInit();
 NativeAPI TimerID Timer_AddTimer(unsigned int delay, TimeoutCallback callback);
 NativeAPI TimerID Timer_AddRepeatTimer(unsigned int delay, unsigned int interval, TimeoutCallback callback);
 NativeAPI bool Timer_CancelTimer(TimerID);
@@ -33,6 +35,7 @@ NativeAPI unsigned int Timer_GetTimersCount();
 
 NativeAPI void IOContext_Init();
 NativeAPI void IOContext_Run();
+NativeAPI void IOContext_Stop();
 NativeAPI void IOContext_UnInit();
 
 NativeAPI NetworkInstance* NetworkInstance_Init(NetworkInitInfo info,

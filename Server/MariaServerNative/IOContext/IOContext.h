@@ -13,12 +13,10 @@ namespace Maria::Server::Native
         static void Stop();
         static boost::asio::io_context* Get();
 
-    private:
-        static void InitTimerManager();
-        static void UnInitTimerManager();
 
     private:
         static boost::asio::io_context* Context_;
+        static std::unique_ptr<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>> WorkGuard_;
     };
 }
 

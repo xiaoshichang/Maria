@@ -77,6 +77,12 @@ namespace Maria.Server.NativeInterface
 		public static extern void Logger_Error(string message);
 
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void TimerMgr_Init();
+		
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void TimerMgr_UnInit();
+		
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern uint Timer_AddTimer(uint delayInMS, TimerCallback callback);
 		
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
@@ -93,6 +99,9 @@ namespace Maria.Server.NativeInterface
 		
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern void IOContext_Run();
+
+		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
+		public static extern void IOContext_Stop();
 		
 		[DllImport(_DllPath, CallingConvention = _CallingConvention, CharSet = _CharSet)]
 		public static extern void IOContext_UnInit();

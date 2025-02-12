@@ -1,15 +1,16 @@
 
 #include "IOContext.h"
-#include "../Timer/TimerMgr.h"
 
 using namespace Maria::Server::Native;
 
 boost::asio::io_context* IOContext::Context_ = nullptr;
+std::unique_ptr<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>> IOContext::WorkGuard_ = nullptr;
 
 void IOContext::Init()
 {
     Context_ = new boost::asio::io_context();
-    InitTimerManager();
+    auto workGuard = boost::asio::make_work_guard(Context_->get_executor());
+    WorkGuard_ = std::make_unique<boost::asio::executor_work_guard<boost::asio::io_context::executor_type>>(workGuard);
 }
 
 void IOContext::Run()
@@ -19,24 +20,14 @@ void IOContext::Run()
 
 void IOContext::UnInit()
 {
-    UnInitTimerManager();
     delete Context_;
     Context_ = nullptr;
 }
 
 void IOContext::Stop()
 {
-    Context_->stop();
-}
-
-void IOContext::InitTimerManager()
-{
-    TimerMgr::Init(Context_);
-}
-
-void IOContext::UnInitTimerManager()
-{
-    TimerMgr::UnInit();
+    WorkGuard_->reset();
+    WorkGuard_ = nullptr;
 }
 
 boost::asio::io_context *IOContext::Get()

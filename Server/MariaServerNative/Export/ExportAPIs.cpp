@@ -2,6 +2,8 @@
 #include "ExportAPIs.h"
 #include "../Logger/Logger.h"
 #include "../IOContext/IOContext.h"
+#include "../Timer/TimerMgr.h"
+
 
 using namespace Maria::Server::Native;
 
@@ -35,6 +37,22 @@ void Logger_Error(const char* message)
     Logger::Error(message, LogTag::Managed);
 }
 
+void TimerMgr_Init()
+{
+    auto ioContext = IOContext::Get();
+    if (ioContext == nullptr)
+    {
+        Logger::Error("IOContext must be initialized first.");
+        return;
+    }
+    TimerMgr::Init(ioContext);
+}
+
+void TimerMgr_UnInit()
+{
+    TimerMgr::UnInit();
+}
+
 TimerID Timer_AddTimer(unsigned int delay, TimeoutCallback callback)
 {
     return TimerMgr::AddTimer(delay, callback);
@@ -63,6 +81,11 @@ void IOContext_Init()
 void IOContext_Run()
 {
     IOContext::Run();
+}
+
+void IOContext_Stop()
+{
+    IOContext::Stop();
 }
 
 void IOContext_UnInit()

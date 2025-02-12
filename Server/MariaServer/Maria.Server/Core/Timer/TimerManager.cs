@@ -41,7 +41,16 @@ namespace Maria.Server.Core.Timer
 			private readonly TimeoutCallback _TimeoutCallback;
 			private readonly object? _Param;
 		}
-	
+
+		public static void Init()
+		{
+			NativeAPI.TimerMgr_Init();
+		}
+
+		public static void UnInit()
+		{
+			NativeAPI.TimerMgr_UnInit();
+		}
 		
 		public static uint AddTimer(uint delayMs, TimeoutCallback callback, object? param)
 		{
