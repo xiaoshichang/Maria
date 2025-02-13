@@ -14,4 +14,13 @@ public partial class GameServer
 		session.Send(rsp);
 	}
 	
+	private void _OnSystemMsgExitProcessReq(NetworkSession session, NetworkSessionMessage message)
+	{
+		Stop();
+		var rsp = new SystemMsgExitProcessRsp()
+		{
+		};
+		session.Send(rsp);
+	}
+	
 }

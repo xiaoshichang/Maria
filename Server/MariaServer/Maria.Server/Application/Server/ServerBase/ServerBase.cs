@@ -22,6 +22,11 @@ namespace Maria.Server.Application.Server.ServerBase
 			NativeAPI.IOContext_Run();
 		}
 
+		protected void Stop()
+		{
+			NativeAPI.IOContext_Stop();
+		}
+
 		public virtual void UnInit()
 		{
 			_UnInitInnerNetwork();

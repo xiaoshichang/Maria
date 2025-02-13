@@ -1,7 +1,8 @@
 import argparse
 import os
 from Start.ServerGroupStart import ServerGroupStartNT
-from Stop.ServerGroupStop import ServerGroupStopNT
+from Stop.ServerGroupStop import ServerGroupStop
+from Kill.ServerGroupKill import ServerGroupKillNT
 
 
 def start_server_group(args):
@@ -14,11 +15,16 @@ def start_server_group(args):
 
 
 def stop_server_group(args):
+    stopper = ServerGroupStop(args)
+    stopper.stop()
+
+
+def kill_server_group(args):
     if os.name == "nt":
-        stopper = ServerGroupStopNT(args)
+        killer = ServerGroupKillNT(args)
     else:
         raise NotImplementedError()
-    stopper.stop()
+    killer.kill()
 
 
 def parser_args():
@@ -32,8 +38,13 @@ def parser_args():
     subparserStart.set_defaults(func=start_server_group)
 
     subparserStop = subparser.add_parser("stop", help="Stop server group")
-    subparserStop.add_argument("ExecutableName", help="server exe name")
+    subparserStop.add_argument("ConfigPath", help="config path of server group")
+    subparserStop.add_argument("TelnetToolScript", help="the path of the telnet tool python script")
     subparserStop.set_defaults(func=stop_server_group)
+
+    subparserKill = subparser.add_parser("kill", help="Kill server group")
+    subparserKill.add_argument("ExecutableName", help="server exe name")
+    subparserKill.set_defaults(func=kill_server_group)
 
     return parser.parse_args()
 

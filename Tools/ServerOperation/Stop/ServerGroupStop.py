@@ -1,27 +1,17 @@
 import os
+import json
+import subprocess
 
 
 class ServerGroupStop(object):
 
     def __init__(self, args):
         self.args = args
+        self.server_group_config = json.load(open(args.ConfigPath))
+        self.tool_script_path = os.path.abspath(self.args.TelnetToolScript)
 
     def stop(self):
-        raise NotImplementedError()
-
-
-class ServerGroupStopNT(ServerGroupStop):
-
-    def __init__(self, args):
-        super().__init__(args)
-
-    def stop(self):
-        os.system("taskkill /f /im  " + self.args.ExecutableName)
-
-
-class ServerGroupStopLinux(ServerGroupStop):
-    def __init__(self, args):
-        super().__init__(args)
-
-    def stop(self):
-        pass
+        port = self.server_group_config["GMServer"]["TelnetPort"]
+        cmd = ["python", self.tool_script_path, "--port", str(port), "--command", "$shutdown"]
+        print(cmd)
+        subprocess.Popen(cmd)

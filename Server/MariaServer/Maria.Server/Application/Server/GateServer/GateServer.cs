@@ -23,7 +23,8 @@ namespace Maria.Server.Application.Server.GateServer
 			base._RegisterNetworkSessionMessageHandlers();
 			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgOpenGateNtf>(_OnSystemMsgOpenGateNtf);
 			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgCloseGateReq>(_OnSystemMsgCloseGateReq);
-			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgCloseGateReq>(_OnSystemMsgSaveEntitiesReq);
+			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgSaveEntitiesReq>(_OnSystemMsgSaveEntitiesReq);
+			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgExitProcessReq>(_OnSystemMsgExitProcessReq);
 		}
 	}
 }

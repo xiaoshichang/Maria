@@ -22,6 +22,7 @@ namespace Maria.Server.Application.Server.GMServer
 			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgStubInitRsp>(_OnSystemMsgStubInitRsp);
 			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgCloseGateRsp>(_OnSystemMsgCloseGateRsp);
 			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgSaveEntitiesRsp>(_OnSystemMsgSaveEntitiesRsp);
+			NetworkMessageHandlers.RegisterNetworkMessageHandler<SystemMsgExitProcessRsp>(_OnSystemMsgExitProcessRsp);
 		}
 	}
 }

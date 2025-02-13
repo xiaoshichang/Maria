@@ -65,3 +65,13 @@ public class SystemMsgSaveEntitiesRsp : NetworkSessionMessage
 {
 	
 }
+
+public class SystemMsgExitProcessReq : NetworkSessionMessage
+{
+	
+}
+
+public class SystemMsgExitProcessRsp : NetworkSessionMessage
+{
+	
+}
