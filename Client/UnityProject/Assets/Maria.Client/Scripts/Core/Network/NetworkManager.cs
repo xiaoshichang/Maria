@@ -35,7 +35,7 @@ namespace Maria.Client.Core.Network
 		public static void ConnectToAsync(string ip, int port)
 		{
 			MLogger.Assert(_Session == null);
-			_Session = new TcpSession();
+			_Session = new TcpNetworkSession();
 			_Session.Init(OnReceive, OnDisconnect);
 			_Session.ConnectToAsync(ip, port, OnConnected);
 		}

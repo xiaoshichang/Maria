@@ -8,8 +8,4 @@
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.12.0" />
     </ItemGroup>
 
-    <Target Name="CopyToUnity" AfterTargets="PostBuildEvent" Condition="'$(TargetFramework)' == 'netstandard2.1'">
-        <Exec Command="copy $(ProjectDir)bin\$(Configuration)\$(TargetFramework)\$(TargetFileName) $(ProjectDir)..\..\..\Client\UnityProject\Assets\Plugins\$(TargetFileName)" />
-    </Target>
-
 </Project>

@@ -58,7 +58,7 @@ namespace Maria.Shared.Network
 			return stream;
 		}
 
-		public static int Deserialize(UnmanagedMemoryStream stream, out NetworkSessionMessage? message)
+		public static int Deserialize(Stream stream, out NetworkSessionMessage? message)
 		{
 			message = null;
 			var streamTotalLength = stream.Length;
@@ -83,16 +83,15 @@ namespace Maria.Shared.Network
 			{
 				return 0; // not enough data to deserialize
 			}
-
-			stream.SetLength(messageLength + NetworkSessionMessage.HeaderLength);
-			stream.Seek(NetworkSessionMessage.HeaderLength, SeekOrigin.Begin);
 			
 			// read type id
 			var tid = BitConverter.ToInt32(buffer, 4);
 			tid = IPAddress.NetworkToHostOrder(tid);
 			var type = NetworkSessionMessage.GetTypeByTypeID(tid);
-			
+
 			// read json body
+			stream.SetLength(messageLength + NetworkSessionMessage.HeaderLength);
+			stream.Seek(NetworkSessionMessage.HeaderLength, SeekOrigin.Begin);
 			var obj = _Serializer.Deserialize(streamReader, type);
 			message = obj as NetworkSessionMessage;
 			var consumeBytes = messageLength + NetworkSessionMessage.HeaderLength;

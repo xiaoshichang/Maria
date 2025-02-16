@@ -26,8 +26,16 @@ void TcpNetworkInstance::Start(const char *ip, int port)
     Logger::Info(std::format("StartListen at:{}:{}", ip, port));
     auto address = boost::asio::ip::address_v4::from_string(ip);
     auto endpoint = tcp::endpoint(address, port);
-    acceptor_ = new tcp::acceptor(*IOContext::Get(), endpoint);
-    Accept();
+    try
+    {
+        acceptor_ = new tcp::acceptor(*IOContext::Get(), endpoint);
+        Accept();
+    }
+    catch(std::exception& e)
+    {
+        Logger::Error(e.what());
+        throw e;
+    }
 }
 
 void TcpNetworkInstance::Stop()

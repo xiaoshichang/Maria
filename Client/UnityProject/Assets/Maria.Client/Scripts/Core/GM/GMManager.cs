@@ -40,15 +40,11 @@ namespace Maria.Client.Core.GM
 			{
 				CollectGMCommandsByReflection(assembly);
 			}
-
-			_InitInteractiveCore(assembliesLoaded);
-			
 			MLogger.Info($"Init GMManager OK. {_AllGMCommands.Count} commands collected.");
 		}
 		
 		public static void UnInit()
 		{
-			_UnInitInteractiveCore();
 			_AllGMCommands.Clear();
 			Object.Destroy(_Root);
 			MLogger.Info($"UnInit GMManager OK.");
@@ -204,8 +200,7 @@ namespace Maria.Client.Core.GM
 		{
 			try
 			{
-				_Interpreter(code);
-				return true;
+				throw new NotImplementedException();
 			}
 			catch (Exception e)
 			{
@@ -233,27 +228,6 @@ namespace Maria.Client.Core.GM
 		public static int GetCommandsCount()
 		{
 			return _AllGMCommands.Count;
-		}
-		
-		
-		private static void _InitInteractiveCore(List<Assembly> assemblies)
-		{
-			
-			var ns = new List<string>();
-			ns.Add("Maria.Client.Application");
-
-			assemblies.Add(typeof(MonoBehaviour).Assembly);
-			InteractiveCore.InteractiveCore.Init(assemblies, ns);
-		}
-
-		private static void _UnInitInteractiveCore()
-		{
-			InteractiveCore.InteractiveCore.UnInit();
-		}
-
-		private static void _Interpreter(string code)
-		{
-			InteractiveCore.InteractiveCore.Interpret(code);
 		}
 
 		private static GameObject _Root;

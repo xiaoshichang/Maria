@@ -38,10 +38,10 @@
     {
       "Name": "GateServer1",
       "InnerIp": "127.0.0.1",
-      "InnerPort": 50300,
-      "TelnetPort": 50301,
+      "InnerPort": 50500,
+      "TelnetPort": 50501,
       "OuterIp": "127.0.0.1",
-      "OuterPort": 50302
+      "OuterPort": 50502
     },
     {
       "Name": "GateServer2",

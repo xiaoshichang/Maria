@@ -1,4 +1,7 @@
-﻿namespace Maria.Client.Core.Network
+﻿using System;
+using Maria.Shared.Network;
+
+namespace Maria.Client.Core.Network
 {
 	public abstract class NetworkSessionEvent
 	{
@@ -6,7 +9,7 @@
 
 	public enum SessionOnConnectedResult
 	{
-		OK,
+		Success,
 		Fail
 	}
 	
@@ -18,11 +21,16 @@
 	
 	public class NetworkSessionEventOnReceive : NetworkSessionEvent
 	{
-		
+		public NetworkSessionMessage Message;
 	}
 
-	public class NetworkSessionEventOnError : NetworkSessionEvent
+	public class NetworkSessionEventOnReceiveError : NetworkSessionEvent
 	{
-		
+		public Exception InternalException;
+	}
+
+	public class NetworkSessionEventOnSendError : NetworkSessionEvent
+	{
+		public Exception InternalException;
 	}
 }
