@@ -5,6 +5,7 @@ project(MariaServerNative)
 set(CMAKE_CXX_STANDARD 20)
 
 include(cmake/SetupBoostLibrary.cmake)
+include(cmake/SetupZeromq.cmake)
 
 add_library(MariaServerNative MODULE
         Logger/Logger.cpp
@@ -19,6 +20,8 @@ add_library(MariaServerNative MODULE
         3rd/kcp/ikcp.h
         3rd/kcp/ikcp.c
 )
+
+add_subdirectory(Test/Test_ZMQ)
 
 target_include_directories(MariaServerNative PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_directories(MariaServerNative PRIVATE ${Boost_LIBRARY_DIRS})
